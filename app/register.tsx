@@ -1,9 +1,9 @@
-import { Image, StyleSheet, Platform, Text, View } from "react-native";
+import { Text, View, StyleSheet } from "react-native";
 
-export default function HomeScreen() {
+export default function RegisterScreen() {
   return (
     <View style={styles.stepContainer}>
-      <Text style={styles.titleContainer}>wea</Text>
+      <Text style={styles.titleContainer}>Register</Text>
     </View>
   );
 }

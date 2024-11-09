@@ -1,9 +1,15 @@
-import { Image, StyleSheet, Platform, Text, View } from "react-native";
+import { View, Text, StyleSheet, Image } from "react-native";
+import { Link } from "expo-router";
+import LoginScreen from "@/components/Login";
 
 export default function HomeScreen() {
   return (
     <View style={styles.stepContainer}>
-      <Text style={styles.titleContainer}>wea</Text>
+      <LoginScreen />
+
+      <Link href={"/register"}>
+        <Text style={styles.register}>Register</Text>
+      </Link>
     </View>
   );
 }
@@ -24,5 +30,9 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     position: "absolute",
+  },
+  register: {
+    color: "blue",
+    textAlign: "center",
   },
 });
