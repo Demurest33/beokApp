@@ -1,6 +1,15 @@
 import { Image, StyleSheet, Platform, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { api } from "@/services/api";
 
 export default function HomeScreen() {
+  useEffect(() => {
+    api.get("/").then((response) => {
+      console.log(response.data);
+    });
+  }, []);
+
   return (
     <View style={styles.stepContainer}>
       <Text style={styles.titleContainer}>wea</Text>
