@@ -11,7 +11,7 @@ export default function Layout() {
           name="index"
           options={{
             drawerLabel: "Escaner",
-            title: "Escabear pedido",
+            title: "Escanear pedido",
             drawerIcon: ({ focused, size }) => (
               <Ionicons
                 name="qr-code-outline"

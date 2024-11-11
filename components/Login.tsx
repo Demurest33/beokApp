@@ -3,6 +3,7 @@ import { useState } from "react";
 import { router } from "expo-router";
 import { loginUser } from "@/services/auth";
 import useUserStore from "@/store/userStore";
+import { Role } from "@/types/User";
 
 export default function LoginScreen() {
   const [phone, setphone] = useState("");
@@ -19,9 +20,11 @@ export default function LoginScreen() {
       if (response?.verified_at == null) {
         router.push("/smsVerification");
         return;
-      } else {
-        router.replace("/(tabs)/");
       }
+
+      userStore.user?.role === Role.ADMIN || Role.AXULIAR
+        ? router.replace("/admin")
+        : router.replace("/(tabs)/");
     } catch (error) {
       alert(error);
     }

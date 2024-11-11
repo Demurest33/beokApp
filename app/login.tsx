@@ -12,7 +12,6 @@ export default function HomeScreen() {
 
   useEffect(() => {
     userStore.clearUser();
-    setUser(userStore.user);
   }, []);
 
   return (

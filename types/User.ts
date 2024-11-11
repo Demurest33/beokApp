@@ -8,7 +8,7 @@ export type User = {
   verified_at: string;
 };
 
-enum Role {
+export enum Role {
   CLIENTE = "CLIENTE",
   ADMIN = "ADMIN",
   AXULIAR = "AXULIAR",
