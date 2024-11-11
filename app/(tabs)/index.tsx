@@ -1,14 +1,16 @@
 import { Image, StyleSheet, Platform, Text, View } from "react-native";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { api } from "@/services/api";
+import useUserStore from "@/store/userStore";
 
 export default function HomeScreen() {
-  useEffect(() => {
-    api.get("/").then((response) => {
-      console.log(response.data);
-    });
-  }, []);
+  // const userStore = useUserStore();
+  // const [user, setUser] = useState(userStore.user);
+
+  // useEffect(() => {
+  //   setUser(userStore.user ? userStore.user : null);
+
+  //   user ? alert("Bienvenido " + user?.name) : alert("Inicia sesión");
+  // }, [user]);
 
   return (
     <View style={styles.stepContainer}>

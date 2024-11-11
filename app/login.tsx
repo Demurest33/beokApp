@@ -1,8 +1,20 @@
 import { View, Text, StyleSheet, Image } from "react-native";
 import { Link } from "expo-router";
 import LoginScreen from "@/components/Login";
+import useUserStore from "@/store/userStore";
+import { useEffect, useState } from "react";
+import { User } from "@/types/User";
 
 export default function HomeScreen() {
+  const [user, setUser] = useState<User | null>(null);
+
+  const userStore = useUserStore();
+
+  useEffect(() => {
+    userStore.clearUser();
+    setUser(userStore.user);
+  }, []);
+
   return (
     <View style={styles.stepContainer}>
       <LoginScreen />

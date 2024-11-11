@@ -1,18 +1,30 @@
 import { View, Text, StyleSheet, Pressable, TextInput } from "react-native";
-import { Link } from "expo-router";
 import { useState } from "react";
 import { router } from "expo-router";
+import { loginUser } from "@/services/auth";
+import useUserStore from "@/store/userStore";
 
 export default function LoginScreen() {
-  const [Username, setUsername] = useState("");
+  const [phone, setphone] = useState("");
+  const [password, setPassword] = useState("");
+  const userStore = useUserStore();
 
-  function login() {
-    if (Username === "") {
-      alert("Please enter a username.");
-      return;
+  async function handleLogin() {
+    try {
+      const response = await loginUser({ phone, password });
+      userStore.setUser(response);
+
+      console.log(response);
+
+      if (response?.verified_at == null) {
+        router.push("/smsVerification");
+        return;
+      } else {
+        router.replace("/(tabs)/");
+      }
+    } catch (error) {
+      alert(error);
     }
-
-    Username == "admin" ? router.replace("/admin") : router.replace("/(tabs)/");
   }
 
   return (
@@ -21,17 +33,18 @@ export default function LoginScreen() {
 
       <TextInput
         style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
-        placeholder="Username"
-        onChangeText={setUsername}
+        placeholder="Número celular"
+        onChangeText={setphone}
       />
 
       <TextInput
         style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
         placeholder="Password"
+        onChangeText={setPassword}
       />
 
       {/* replace   |   asChild*/}
-      <Pressable style={styles.button} onPress={login}>
+      <Pressable style={styles.button} onPress={handleLogin}>
         <Text
           style={{
             color: "white",
