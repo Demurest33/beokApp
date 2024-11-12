@@ -3,7 +3,8 @@ import { useState } from "react";
 import { router } from "expo-router";
 import { loginUser } from "@/services/auth";
 import useUserStore from "@/store/userStore";
-import { Role } from "@/types/User";
+import { Role, User } from "@/types/User";
+import { saveUser } from "@/store/sharedPreferences";
 
 export default function LoginScreen() {
   const [phone, setphone] = useState("");
@@ -12,19 +13,22 @@ export default function LoginScreen() {
 
   async function handleLogin() {
     try {
-      const response = await loginUser({ phone, password });
+      const response: User = await loginUser({ phone, password });
       userStore.setUser(response);
-
-      console.log(response);
+      saveUser(response);
 
       if (response?.verified_at == null) {
         router.push("/smsVerification");
         return;
       }
 
-      userStore.user?.role === Role.ADMIN || Role.AXULIAR
-        ? router.replace("/admin")
-        : router.replace("/(tabs)/");
+      if (response.role === Role.ADMIN || response.role === Role.AXULIAR) {
+        router.replace("/admin");
+      }
+
+      if (response.role === Role.CLIENTE) {
+        router.replace("/(tabs)/");
+      }
     } catch (error) {
       alert(error);
     }

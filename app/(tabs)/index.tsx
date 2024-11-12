@@ -1,9 +1,38 @@
 import { StyleSheet, Text, View } from "react-native";
+import { getUser } from "@/store/sharedPreferences";
+import { useEffect } from "react";
+import useUserStore from "@/store/userStore";
+import { User, Role } from "@/types/User";
+import { router } from "expo-router";
 
 export default function HomeScreen() {
+  const userStore = useUserStore();
+
+  useEffect(() => {
+    const getUserData = async () => {
+      const user: User = await getUser();
+      if (user !== null) {
+        userStore.setUser(user);
+
+        if (user.role === Role.ADMIN || user.role === Role.AXULIAR) {
+          router.replace("/admin");
+        }
+
+        if (user.role === Role.CLIENTE) {
+          router.replace("/(tabs)/");
+        }
+      }
+    };
+
+    getUserData();
+  }, []);
+
   return (
     <View style={styles.stepContainer}>
-      <Text style={styles.titleContainer}>wea</Text>
+      <Text style={styles.titleContainer}>
+        Bienvenido {userStore.user?.name ?? "Usuario"}{" "}
+        {userStore.user?.role ?? ""}
+      </Text>
     </View>
   );
 }

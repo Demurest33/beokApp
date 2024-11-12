@@ -31,14 +31,6 @@ export default function Layout() {
         />
 
         <Drawer.Screen
-          name="client"
-          options={{
-            drawerLabel: "Cliente",
-            title: "Ir al lado del cliente",
-          }}
-        />
-
-        <Drawer.Screen
           name="menu"
           options={{
             drawerLabel: "Menu",
