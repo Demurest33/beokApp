@@ -2,6 +2,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Drawer } from "expo-router/drawer";
 import { Ionicons } from "@expo/vector-icons";
 import CustomDrawerContent from "@/components/admin/CustomDrawerContent";
+import { router } from "expo-router";
 
 export default function Layout() {
   return (
@@ -43,6 +44,19 @@ export default function Layout() {
           options={{
             drawerLabel: "Pedidos",
             title: "Pedidos de los clientes",
+          }}
+        />
+
+        <Drawer.Screen
+          listeners={() => ({
+            drawerItemPress: () => {
+              router.replace("/login");
+            },
+          })}
+          name="logout"
+          options={{
+            drawerLabel: "Cerrar sesión",
+            title: "Cerrar sesión",
           }}
         />
       </Drawer>
