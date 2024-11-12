@@ -1,17 +1,6 @@
-import { Image, StyleSheet, Platform, Text, View } from "react-native";
-import { useEffect, useState } from "react";
-import useUserStore from "@/store/userStore";
+import { StyleSheet, Text, View } from "react-native";
 
 export default function HomeScreen() {
-  // const userStore = useUserStore();
-  // const [user, setUser] = useState(userStore.user);
-
-  // useEffect(() => {
-  //   setUser(userStore.user ? userStore.user : null);
-
-  //   user ? alert("Bienvenido " + user?.name) : alert("Inicia sesión");
-  // }, [user]);
-
   return (
     <View style={styles.stepContainer}>
       <Text style={styles.titleContainer}>wea</Text>
