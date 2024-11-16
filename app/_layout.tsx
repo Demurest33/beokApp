@@ -37,6 +37,13 @@ export default function RootLayout() {
         <Stack.Screen name="admin" options={{ headerShown: false }} />
         <Stack.Screen name="login" />
         <Stack.Screen name="register" />
+        <Stack.Screen
+          name="products/[id]"
+          //Nombre del producto como titulo de la pantalla
+          options={({ route }) => ({
+            headerTitle: (route.params as { name: string })?.name,
+          })}
+        />
       </Stack>
     </ThemeProvider>
   );
