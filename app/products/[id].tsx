@@ -1,14 +1,16 @@
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, Pressable } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { Product, ProductOption } from "@/types/Menu";
 import { getProductOptions } from "@/services/menu";
+import RadioForm from "react-native-simple-radio-button";
 
 export default function ProductComponent() {
   const { id, name, description, price, image_url } = useLocalSearchParams();
-  const [product, setProduct] = useState(null);
   const [options, setOptions] = useState<ProductOption[]>([]);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [selectedOptions, setSelectedOptions] = useState<{
+    [key: string]: any;
+  }>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,11 +23,22 @@ export default function ProductComponent() {
         parseInt(id as string)
       );
       setOptions(options);
+
+      // Inicializamos las opciones seleccionadas con valores por defecto
+      const initialSelectedOptions: { [key: string]: any } = {};
+      options.forEach((option) => {
+        initialSelectedOptions[option.name] = option.values[0];
+      });
+      setSelectedOptions(initialSelectedOptions);
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
     }
+  }
+
+  function printSelectedOptions() {
+    console.log(selectedOptions);
   }
 
   return (
@@ -40,13 +53,30 @@ export default function ProductComponent() {
       {options.map((option) => (
         <View key={option.id}>
           <Text style={styles.optionName}>{option.name}</Text>
-          {option.values.map((value) => (
-            <View key={value}>
-              <Text style={styles.optionValue}>{value}</Text>
-            </View>
-          ))}
+
+          <RadioForm
+            radio_props={option.values.map((value) => ({
+              label: value,
+              value: value,
+            }))}
+            initial={0}
+            onPress={(value) => {
+              setSelectedOptions({
+                ...selectedOptions,
+                [option.name]: value,
+              });
+            }}
+          />
         </View>
       ))}
+
+      <Pressable
+        onPress={() => {
+          printSelectedOptions();
+        }}
+      >
+        <Text>Print Product</Text>
+      </Pressable>
     </View>
   );
 }
