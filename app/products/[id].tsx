@@ -1,11 +1,13 @@
 import { View, Text, Image, StyleSheet, Pressable } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, Link } from "expo-router";
 import { useEffect, useState } from "react";
-import { Product, ProductOption } from "@/types/Menu";
+import { ProductOption, productWithOptions } from "@/types/Menu";
 import { getProductOptions } from "@/services/menu";
 import RadioForm from "react-native-simple-radio-button";
+import useCartStore from "@/store/cart";
 
 export default function ProductComponent() {
+  const cartStore = useCartStore();
   const { id, name, description, price, image_url } = useLocalSearchParams();
   const [options, setOptions] = useState<ProductOption[]>([]);
   const [selectedOptions, setSelectedOptions] = useState<{
@@ -37,8 +39,19 @@ export default function ProductComponent() {
     }
   }
 
-  function printSelectedOptions() {
-    console.log(selectedOptions);
+  async function getProductAndAttachoptions() {
+    const productWithOptions: productWithOptions = {
+      id: parseInt(id as string),
+      name: name as string,
+      description: description as string,
+      price: parseFloat(price as string),
+      image_url: image_url as string,
+      selectedOptions,
+      quantity: 1,
+    };
+
+    cartStore.addProduct(productWithOptions);
+    alert("Producto agregado al carrito"); //dar la opcion de ir al carrito o seguir comprando
   }
 
   return (
@@ -72,10 +85,10 @@ export default function ProductComponent() {
 
       <Pressable
         onPress={() => {
-          printSelectedOptions();
+          getProductAndAttachoptions();
         }}
       >
-        <Text>Print Product</Text>
+        <Text>Añadir al carrito</Text>
       </Pressable>
     </View>
   );

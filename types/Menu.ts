@@ -1,3 +1,14 @@
+// Para el carrito
+export interface productWithOptions {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  image_url: string;
+  selectedOptions: { [key: string]: any };
+  quantity: number;
+}
+
 // Representa una opción de un producto
 export interface ProductOption {
   id: number; // ID de la opción
