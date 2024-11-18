@@ -1,6 +1,11 @@
 import { create } from "zustand";
 import { productWithOptions } from "@/types/Menu";
 
+export enum paymentType {
+  efectivo = "efectivo",
+  transferencia = "transferencia",
+}
+
 interface CartState {
   products: productWithOptions[];
   addProduct: (product: productWithOptions) => void;
