@@ -1,12 +1,11 @@
 import { router } from "expo-router";
 import {
   StyleSheet,
-  Image,
-  Platform,
+  ActivityIndicator,
   View,
   Text,
-  Pressable,
   FlatList,
+  RefreshControl,
 } from "react-native";
 import { getOrders } from "@/services/orders";
 import { useEffect, useState } from "react";
@@ -19,26 +18,42 @@ interface orderResponse {
   message: string;
   payment_type: string;
   pick_up_date: string;
-  status: string;
+  status: status;
   total: number;
   updated_at: string;
   user_id: number;
 }
 
+enum status {
+  preparing = "preparing",
+  ready = "ready",
+  delivered = "delivered",
+  cancelled = "cancelled",
+}
+
 export default function TabTwoScreen() {
   const userStore = useUserStore();
   const [orders, setOrders] = useState<orderResponse[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchOrders();
-  }, []);
+  }, [userStore.user, refreshing]);
 
   async function fetchOrders() {
     if (userStore.user !== null) {
-      const orders = await getOrders(parseInt(userStore.user.id));
-      if (orders) {
+      try {
+        setLoading(true);
+        const orders = await getOrders(parseInt(userStore.user.id));
+        if (orders) {
+          setOrders(orders);
+        }
         setOrders(orders);
-        console.log(orders);
+      } catch (error) {
+        console.error("Error al obtener los pedidos:", error);
+      } finally {
+        setLoading(false);
       }
     }
   }
@@ -51,9 +66,24 @@ export default function TabTwoScreen() {
     );
   }
 
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#000" />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <FlatList
+        refreshControl={
+          <RefreshControl
+            refreshing={false}
+            onRefresh={fetchOrders}
+            colors={["#000"]}
+          />
+        }
         data={orders}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => <PedidoComponent {...item} />}
@@ -63,10 +93,5 @@ export default function TabTwoScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
+  container: {},
 });

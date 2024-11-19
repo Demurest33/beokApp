@@ -26,7 +26,7 @@ export default function Carrito() {
   const [total, setTotal] = useState(0);
   const [products, setProducts] = useState<productWithOptions[]>([]);
 
-  // setear la fecha y hora a 35 min despues de la hora actual Y ajustar 30 minutos mas
+  // setear la fecha y hora a 35 min despues de la hora actual en México
   const now = new Date();
   const utcOffset = now.getTimezoneOffset() * 60000; // Diferencia UTC en milisegundos
   const mexicoOffset = -6 * 60 * 60 * 1000; // UTC-6 (tiempo estándar de México)
@@ -61,6 +61,18 @@ export default function Carrito() {
       !(dayOfWeek === 5 || dayOfWeek === 6 || dayOfWeek === 0)
     );
   }, []);
+
+  useEffect(() => {
+    // setear la fecha y hora a 35 min despues de la hora actual en México
+    // lo anterior se debe de hacer cada que el carrito se actualiza
+    const now = new Date();
+    const utcOffset = now.getTimezoneOffset() * 60000; // Diferencia UTC en milisegundos
+    const mexicoOffset = -6 * 60 * 60 * 1000; // UTC-6 (tiempo estándar de México)
+    const mexicoTime = new Date(now.getTime() + utcOffset + mexicoOffset);
+    mexicoTime.setMinutes(mexicoTime.getMinutes() + 35);
+
+    setPickUpDate(mexicoTime);
+  }, [cartStore.products]);
 
   const onChange = (event: any, selectedDate?: Date) => {
     const currentDate = selectedDate || pickUpDate;
@@ -109,6 +121,7 @@ export default function Carrito() {
 
     // Validación 1: La fecha de recogida no puede ser un día ya pasado
     if (pickUpDate < mexicoTime) {
+      console.log(pickUpDate, mexicoTime);
       alert("La fecha y hora de recogida no pueden ser en el pasado.");
       return;
     }
@@ -188,6 +201,10 @@ export default function Carrito() {
   return (
     <View style={styles.titleContainer}>
       <Text>Total: ${total}</Text>
+
+      <Pressable onPress={() => cartStore.clearCart()}>
+        <Text>Limpiar carrito</Text>
+      </Pressable>
 
       {products.map((product) => (
         <CartProduct
