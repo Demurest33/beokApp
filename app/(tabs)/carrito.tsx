@@ -15,9 +15,13 @@ import CartProduct from "@/components/CartProduct";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import RadioForm from "react-native-simple-radio-button";
 import { paymentType } from "@/store/cart";
+import { Order, createOrder } from "@/services/orders";
+import useUserStore from "@/store/userStore";
+import { User } from "@/types/User";
 
 export default function Carrito() {
   const cartStore = useCartStore();
+  const userStore = useUserStore();
 
   const [total, setTotal] = useState(0);
   const [products, setProducts] = useState<productWithOptions[]>([]);
@@ -34,6 +38,8 @@ export default function Carrito() {
   const [showTime, setShowTime] = useState(false);
   const [pago, setPago] = useState(paymentType.efectivo);
   const [showTransferOption, setShowTransferOption] = useState(true);
+  const [creatingOrder, setCreatingOrder] = useState(false);
+  const [meesage, setMessage] = useState("");
 
   useEffect(() => {
     setProducts(cartStore.products);
@@ -70,7 +76,13 @@ export default function Carrito() {
     setShowTime(Platform.OS === "ios");
   };
 
-  const handleOrder = () => {
+  const handleOrder = async () => {
+    //si el usuario no tiene sesion iniciad no puede hacer un pedido
+    if (!userStore.user) {
+      alert("Debes iniciar sesión para realizar un pedido.");
+      return;
+    }
+
     //   Hora de cierre de la cafeteria 7pm -- Hasta esa hora se pueden recoger pedidos
     // Hora de cierre de cocina -- 5pm
     // Los pedidos se deben de hacer 30min antes de la hora de recogida
@@ -108,26 +120,18 @@ export default function Carrito() {
     }
 
     // Validación 3: La hora actual en México no puede ser mayor a 4:30 PM
-    const cutoffTime = new Date(mexicoTime);
-    cutoffTime.setHours(16, 30, 0, 0); // 4:30 PM
-    if (mexicoTime > cutoffTime) {
-      alert("No se pueden realizar pedidos después de las 4:30 PM.");
-      return;
-    }
+    // const cutoffTime = new Date(mexicoTime);
+    // cutoffTime.setHours(16, 30, 0, 0); // 4:30 PM
+    // if (mexicoTime > cutoffTime) {
+    //   alert("No se pueden realizar pedidos después de las 4:30 PM.");
+    //   return;
+    // }
 
     // Validación 4: La hora de recogida no puede ser mayor a las 7 PM
-    if (pickUpDate > closingTime) {
-      alert("La hora de recogida no puede ser después de las 7:00 PM.");
-      return;
-    }
-
-    // Validación 5: La hora de recogida no puede exceder el cierre de cocina (5:00 PM)
-    if (pickUpDate > kitchenClosingTime) {
-      alert(
-        "No puedes programar un pedido para después de las 5:00 PM, ya que la cocina estará cerrada."
-      );
-      return;
-    }
+    // if (pickUpDate > closingTime) {
+    //   alert("La hora de recogida no puede ser después de las 7:00 PM.");
+    //   return;
+    // }
 
     // Validación 6: Los pedidos deben realizarse con al menos 30 minutos de anticipación
     if (mexicoTime > thirtyMinutesBeforePickup) {
@@ -149,12 +153,24 @@ export default function Carrito() {
 
     // Si pasa todas las validaciones, continuar con la orden
     alert("Orden enviada con éxito.");
-    console.log({
+
+    const order: Order = {
       products,
       total,
-      pickUpDate,
-      paymentType: pago,
-    });
+      additionalInstructions: meesage,
+      pick_up_date:
+        pickUpDate.toLocaleDateString() + " " + pickUpDate.toLocaleTimeString(),
+      payment_type: pago,
+    };
+
+    try {
+      setCreatingOrder(true);
+      await createOrder(order, parseInt(userStore.user.id));
+    } catch (error) {
+      console.error("Error al crear la orden:", error);
+    } finally {
+      setCreatingOrder(false);
+    }
   };
 
   if (products.length === 0) {
@@ -179,6 +195,7 @@ export default function Carrito() {
       <TextInput
         style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
         placeholder="Instrucciones adicionales"
+        onChangeText={(text) => setMessage(text)}
         multiline
         numberOfLines={4}
       />

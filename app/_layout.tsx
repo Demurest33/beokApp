@@ -44,6 +44,14 @@ export default function RootLayout() {
             headerTitle: (route.params as { name: string })?.name,
           })}
         />
+        <Stack.Screen
+          name="myOrders/[id]"
+          //ID del pedido como titulo de la pantalla
+          options={({ route }) => ({
+            headerTitle:
+              "Numero de pedido: " + (route.params as { id: string })?.id,
+          })}
+        />
       </Stack>
     </ThemeProvider>
   );
