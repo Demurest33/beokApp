@@ -11,25 +11,8 @@ import { getOrders } from "@/services/orders";
 import { useEffect, useState } from "react";
 import useUserStore from "@/store/userStore";
 import PedidoComponent from "@/components/Pedido";
-
-interface orderResponse {
-  created_at: string;
-  id: number;
-  message: string;
-  payment_type: string;
-  pick_up_date: string;
-  status: status;
-  total: number;
-  updated_at: string;
-  user_id: number;
-}
-
-enum status {
-  preparing = "preparing",
-  ready = "ready",
-  delivered = "delivered",
-  cancelled = "cancelled",
-}
+import { OrderStatus } from "@/services/orders";
+import { orderResponse } from "@/services/orders";
 
 export default function TabTwoScreen() {
   const userStore = useUserStore();
@@ -75,20 +58,18 @@ export default function TabTwoScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        refreshControl={
-          <RefreshControl
-            refreshing={false}
-            onRefresh={fetchOrders}
-            colors={["#000"]}
-          />
-        }
-        data={orders}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <PedidoComponent {...item} />}
-      />
-    </View>
+    <FlatList
+      refreshControl={
+        <RefreshControl
+          refreshing={false}
+          onRefresh={fetchOrders}
+          colors={["#000"]}
+        />
+      }
+      data={orders}
+      keyExtractor={(item) => item.id.toString()}
+      renderItem={({ item }) => <PedidoComponent {...item} />}
+    />
   );
 }
 

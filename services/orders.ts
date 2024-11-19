@@ -11,21 +11,23 @@ export interface Order {
   additionalInstructions?: string;
 }
 
-export interface OrderResponse {
+export interface orderResponse {
+  created_at: string;
   id: number;
-  user_id: number;
-  products: productWithOptions[];
-  pick_up_date: Date;
-  payment_type: paymentType;
+  message: string;
+  payment_type: string;
+  pick_up_date: string;
+  status: OrderStatus;
   total: number;
-  additionalInstructions?: string;
+  updated_at: string;
+  user_id: number;
 }
 
 export enum OrderStatus {
-  preparing = "pending",
-  ready = "ready",
-  delivered = "delivered",
-  canceled = "canceled",
+  preparando = "preparando",
+  listo = "listo",
+  entregado = "entregado",
+  cancelado = "cancelado",
 }
 
 export async function createOrder(orderData: Order, userId: number) {
@@ -66,4 +68,14 @@ export async function getOrders(userId: number) {
     console.error("Error inesperado:", error);
     return null;
   }
+}
+
+export async function getOrderDetails(orderId: number) {
+  const response = await api.get(`/orders/${orderId}/order-products`);
+
+  if (response.data.success == true) {
+    return response.data.order_products;
+  }
+
+  throw new Error("Hubo un problema obteniendo el detalle de el pedido");
 }

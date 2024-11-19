@@ -9,25 +9,8 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-
-interface orderResponse {
-  created_at: string;
-  id: number;
-  message: string;
-  payment_type: string;
-  pick_up_date: string;
-  status: status;
-  total: number;
-  updated_at: string;
-  user_id: number;
-}
-
-enum status {
-  preparing = "preparing",
-  ready = "ready",
-  delivered = "delivered",
-  cancelled = "cancelled",
-}
+import { OrderStatus } from "@/services/orders";
+import { orderResponse } from "@/services/orders";
 
 export default function PedidoComponent(pedido: orderResponse) {
   const handlePressProduct = () => {
@@ -35,15 +18,21 @@ export default function PedidoComponent(pedido: orderResponse) {
       pathname: `/myOrders/[id]`,
       params: {
         id: pedido.id,
+        payment_type: pedido.payment_type,
+        pick_up_date: pedido.pick_up_date,
+        status: pedido.status,
+        total: pedido.total,
+        message: pedido.message,
+        created_at: pedido.created_at,
       },
     });
   };
 
   const statusColors = {
-    preparing: "#FFA500", // Naranja
-    ready: "#32CD32", // Verde
-    delivered: "#1E90FF", // Azul
-    cancelled: "#FF4500", // Rojo
+    preparando: "#FFA500", // Naranja
+    listo: "#32CD32", // Verde
+    entregado: "#1E90FF", // Azul
+    cancelado: "#FF4500", // Rojo
   };
 
   const statusColor = statusColors[pedido.status];
@@ -56,8 +45,12 @@ export default function PedidoComponent(pedido: orderResponse) {
       {/* Contenido de la tarjeta */}
       <View style={styles.cardContent}>
         <View style={styles.header}>
-          <Text style={styles.date}>{pedido.pick_up_date}</Text>
-          <Text style={styles.total}>${pedido.total.toFixed(2)}</Text>
+          <Text style={styles.date}>
+            {pedido.created_at.split("T")[0]} -{" "}
+            {pedido.created_at.split("T")[1].split(".")[0]}
+          </Text>
+
+          <Text style={styles.total}>${pedido.total}</Text>
         </View>
 
         <Text style={[styles.status, { color: statusColor }]}>
