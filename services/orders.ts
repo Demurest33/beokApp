@@ -34,7 +34,7 @@ export async function createOrder(orderData: Order, userId: number) {
       ...orderData,
       user_id: userId,
     });
-    console.log(response.data);
+
     return response.data;
   } catch (error: unknown) {
     if (error instanceof AxiosError) {

@@ -26,12 +26,12 @@ export default function Carrito() {
   const [total, setTotal] = useState(0);
   const [products, setProducts] = useState<productWithOptions[]>([]);
 
-  // setear la fecha y hora a 30min despues de la hora actual Y ajustar 30 minutos mas
+  // setear la fecha y hora a 35 min despues de la hora actual Y ajustar 30 minutos mas
   const now = new Date();
   const utcOffset = now.getTimezoneOffset() * 60000; // Diferencia UTC en milisegundos
   const mexicoOffset = -6 * 60 * 60 * 1000; // UTC-6 (tiempo estándar de México)
   const mexicoTime = new Date(now.getTime() + utcOffset + mexicoOffset);
-  mexicoTime.setMinutes(mexicoTime.getMinutes() + 30);
+  mexicoTime.setMinutes(mexicoTime.getMinutes() + 35);
 
   const [pickUpDate, setPickUpDate] = useState(mexicoTime);
   const [show, setShow] = useState(false);
@@ -151,23 +151,27 @@ export default function Carrito() {
       return;
     }
 
-    // Si pasa todas las validaciones, continuar con la orden
-    alert("Orden enviada con éxito.");
-
     const order: Order = {
       products,
       total,
       additionalInstructions: meesage,
       pick_up_date:
-        pickUpDate.toLocaleDateString() + " " + pickUpDate.toLocaleTimeString(),
+        pickUpDate!.toLocaleDateString() +
+        " " +
+        pickUpDate!.toLocaleTimeString(),
       payment_type: pago,
     };
 
     try {
       setCreatingOrder(true);
-      await createOrder(order, parseInt(userStore.user.id));
+      const response = await createOrder(order, parseInt(userStore.user.id));
+      if (response) {
+        alert("Orden creada con éxito");
+        cartStore.clearCart();
+      }
     } catch (error) {
       console.error("Error al crear la orden:", error);
+      alert("Error al crear la orden");
     } finally {
       setCreatingOrder(false);
     }
