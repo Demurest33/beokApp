@@ -1,4 +1,11 @@
-import { View, Text, StyleSheet, Pressable, TextInput } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  TextInput,
+  ActivityIndicator,
+} from "react-native";
 import { useState } from "react";
 import { router } from "expo-router";
 import { loginUser } from "@/services/auth";
@@ -10,9 +17,15 @@ export default function LoginScreen() {
   const [phone, setphone] = useState("");
   const [password, setPassword] = useState("");
   const userStore = useUserStore();
+  const [loading, setLoading] = useState(false);
 
   async function handleLogin() {
+    if (loading) {
+      return;
+    }
+
     try {
+      setLoading(true);
       const response: User = await loginUser({ phone, password });
       userStore.setUser(response);
       saveUser(response);
@@ -31,12 +44,16 @@ export default function LoginScreen() {
       }
     } catch (error) {
       alert(error);
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <View style={styles.stepContainer}>
       <Text style={styles.titleContainer}>Login</Text>
+
+      {loading ? <ActivityIndicator size="large" color="#000" /> : null}
 
       <TextInput
         style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
