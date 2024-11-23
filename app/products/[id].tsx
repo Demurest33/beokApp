@@ -5,6 +5,7 @@ import { ProductOption, productWithOptions } from "@/types/Menu";
 import { getProductOptions } from "@/services/menu";
 import RadioForm from "react-native-simple-radio-button";
 import useCartStore from "@/store/cart";
+import { addWhitelistedNativeProps } from "react-native-reanimated/lib/typescript/ConfigHelper";
 
 export default function ProductComponent() {
   const cartStore = useCartStore();
@@ -14,10 +15,34 @@ export default function ProductComponent() {
     [key: string]: any;
   }>({});
   const [loading, setLoading] = useState(true);
+  const [priceTotal, setPriceTotal] = useState(0);
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     fetchProductOptions();
+
+    const price_withDefaultOptions =
+      parseFloat(price as string) +
+      options.reduce((acc, option) => {
+        const valueIndex = option.values.indexOf(option.values[0]);
+        const optionPrice = option.prices?.[valueIndex] || 0;
+        return acc + Number(optionPrice);
+      }, 0);
+
+    setPriceTotal(price_withDefaultOptions);
   }, []);
+
+  useEffect(() => {
+    // primero calcular el precio total en base a las selected optiosn y depues calcular el precio total en base a la cantidad
+
+    const price_withOptions = options.reduce((acc, option) => {
+      const valueIndex = option.values.indexOf(selectedOptions[option.name]);
+      const optionPrice = option.prices?.[valueIndex] || 0;
+      return acc + Number(optionPrice);
+    }, parseFloat(price as string));
+
+    setPriceTotal(price_withOptions * quantity);
+  }, [selectedOptions]);
 
   async function fetchProductOptions() {
     try {
@@ -36,6 +61,8 @@ export default function ProductComponent() {
       console.error(error);
     } finally {
       setLoading(false);
+      //set the price total
+      setPriceTotal(parseFloat(price as string));
     }
   }
 
@@ -47,11 +74,42 @@ export default function ProductComponent() {
       price: parseFloat(price as string),
       image_url: image_url as string,
       selectedOptions,
-      quantity: 1,
+      quantity: quantity,
+      selectedOptionPrices: options.map((option) => {
+        const valueIndex = option.values.indexOf(selectedOptions[option.name]);
+        return option.prices?.[valueIndex] || 0;
+      }),
     };
 
     cartStore.addProduct(productWithOptions);
     alert("Producto agregado al carrito"); //dar la opcion de ir al carrito o seguir comprando
+  }
+
+  function addQuantity() {
+    setQuantity(quantity + 1);
+
+    //set the price total
+
+    const price_withOptions = options.reduce((acc, option) => {
+      const valueIndex = option.values.indexOf(selectedOptions[option.name]);
+      const optionPrice = option.prices?.[valueIndex] || 0;
+      return acc + Number(optionPrice);
+    }, parseFloat(price as string));
+
+    setPriceTotal(price_withOptions * (quantity + 1));
+  }
+
+  function substractQuantity() {
+    if (quantity > 1) setQuantity(quantity - 1);
+
+    //set the price total
+    const price_withOptions = options.reduce((acc, option) => {
+      const valueIndex = option.values.indexOf(selectedOptions[option.name]);
+      const optionPrice = option.prices?.[valueIndex] || 0;
+      return acc + Number(optionPrice);
+    }, parseFloat(price as string));
+
+    setPriceTotal(price_withOptions * (quantity - 1));
   }
 
   return (
@@ -59,7 +117,7 @@ export default function ProductComponent() {
       <Image source={{ uri: image_url as string }} style={styles.image} />
       <Text style={styles.productName}>{name}</Text>
       <Text style={styles.description}>{description}</Text>
-      <Text style={styles.price}>${price}</Text>
+      <Text style={styles.price}>${priceTotal}</Text>
 
       {/* make radio buttons */}
 
@@ -74,6 +132,7 @@ export default function ProductComponent() {
             }))}
             initial={0}
             onPress={(value) => {
+              console.log(option.prices?.[option.values.indexOf(value)] || 0);
               setSelectedOptions({
                 ...selectedOptions,
                 [option.name]: value,
@@ -82,6 +141,25 @@ export default function ProductComponent() {
           />
         </View>
       ))}
+
+      {/* cambiar cantidad del producto */}
+
+      <Text>Cantidad: {quantity}</Text>
+      <Pressable
+        style={{ marginBottom: 10, backgroundColor: "red", padding: 10 }}
+        onPress={() => {
+          if (quantity > 1) substractQuantity();
+        }}
+      >
+        <Text style={{ fontSize: 16, color: "white" }}>Restar uno mas</Text>
+      </Pressable>
+
+      <Pressable
+        style={{ marginBottom: 10, backgroundColor: "blue", padding: 10 }}
+        onPress={() => addQuantity()}
+      >
+        <Text style={{ fontSize: 16, color: "white" }}>Agregar uno mas</Text>
+      </Pressable>
 
       <Pressable
         onPress={() => {

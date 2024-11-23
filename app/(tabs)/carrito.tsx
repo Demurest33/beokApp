@@ -47,9 +47,15 @@ export default function Carrito() {
 
   useEffect(() => {
     let total = 0;
-
+    // tomar en cuenta las opcioenes seleccionadas con sus prices
     products.forEach((product) => {
-      total += product.price * product.quantity;
+      const price_withOptions = product.selectedOptionPrices.reduce(
+        (acc, optionPrice) => {
+          return acc + Number(optionPrice);
+        },
+        product.price
+      );
+      total += price_withOptions * product.quantity;
     });
     setTotal(total);
   }, [products]);
@@ -89,6 +95,10 @@ export default function Carrito() {
   };
 
   const handleOrder = async () => {
+    if (creatingOrder) {
+      return;
+    }
+
     //si el usuario no tiene sesion iniciad no puede hacer un pedido
     if (!userStore.user) {
       alert("Debes iniciar sesión para realizar un pedido.");
@@ -164,8 +174,15 @@ export default function Carrito() {
       return;
     }
 
+    const productsWithCalculatedPrices = products.map((product) => ({
+      ...product,
+      totalPrice:
+        product.price +
+        product.selectedOptionPrices.reduce((sum, val) => sum + val, 0),
+    }));
+
     const order: Order = {
-      products,
+      products: productsWithCalculatedPrices,
       total,
       additionalInstructions: meesage,
       pick_up_date:

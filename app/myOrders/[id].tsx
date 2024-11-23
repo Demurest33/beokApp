@@ -30,6 +30,7 @@ export default function OrderDetails() {
 
   const [orderDetails, setOrderDetails] = useState<order_product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [preciototal, setPrecioTotal] = useState(0);
 
   useEffect(() => {
     async function fetchOrderDetails() {

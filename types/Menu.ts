@@ -7,6 +7,8 @@ export interface productWithOptions {
   image_url: string;
   selectedOptions: { [key: string]: any };
   quantity: number;
+  selectedOptionPrices: number[];
+  totalPrice: number;
 }
 
 // Representa una opción de un producto
@@ -15,6 +17,7 @@ export interface ProductOption {
   name: string; // Nombre de la opción (ej. "Tamaño")
   values: string[]; // Valores posibles (ej. ["Chico", "Grande"])
   product_id: number; // ID del producto asociado
+  prices: number[]; // Precios adicionales por cada valor (ej. [0, 1.5])
 }
 
 // Representa un producto
