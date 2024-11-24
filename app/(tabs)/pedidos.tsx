@@ -23,9 +23,14 @@ export default function TabTwoScreen() {
 
   useEffect(() => {
     fetchOrders();
-
-    setFavourites(orders.filter((order) => order.is_fav));
   }, [userStore.user, refreshing]);
+
+  useEffect(() => {
+    if (orders.length > 0) {
+      const favs = orders.filter((order) => order.is_fav);
+      setFavourites(favs);
+    }
+  }, [orders]);
 
   async function fetchOrders() {
     if (userStore.user !== null) {

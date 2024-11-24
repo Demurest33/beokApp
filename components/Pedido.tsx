@@ -4,16 +4,28 @@ import {
   StyleSheet,
   Pressable,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { orderResponse, toogleFavOrder } from "@/services/orders";
 import { useState } from "react";
+import {
+  createOrder,
+  Order,
+  getOrderDetails,
+  order_product,
+} from "@/services/orders";
+import useUserStore from "@/store/userStore";
+import { paymentType } from "@/store/cart";
+import { productWithOptions } from "@/types/Menu";
+import { reOrder } from "@/services/orders";
 
 export default function PedidoComponent(pedido: orderResponse) {
   const [loading, setLoading] = useState(false);
   const [isfav, setIsFav] = useState(pedido.is_fav);
-
+  const userStore = useUserStore();
+  const [orderDetails, setOrderDetails] = useState<order_product[]>([]);
   const handlePressProduct = () => {
     router.push({
       pathname: `/myOrders/[id]`,
@@ -53,48 +65,94 @@ export default function PedidoComponent(pedido: orderResponse) {
     }
   };
 
+  const re_order = async () => {
+    if (loading) {
+      return;
+    }
+
+    // crear una nueva fecha con el tiempo actual de mexico y sumarle 30min para la nueva orden
+    const now = new Date();
+    const utcOffset = now.getTimezoneOffset() * 60000; // Diferencia UTC en milisegundos
+    const mexicoOffset = -6 * 60 * 60 * 1000; // UTC-6 (tiempo estándar de México)
+    const mexicoTime = new Date(now.getTime() + utcOffset + mexicoOffset);
+
+    // Sumar 30 minutos
+
+    const thirtyMinutesBeforePickup = new Date(
+      mexicoTime.getTime() + 30 * 60 * 1000
+    );
+
+    try {
+      setLoading(true);
+      await reOrder(
+        pedido.id,
+        thirtyMinutesBeforePickup.toLocaleDateString() +
+          " " +
+          thirtyMinutesBeforePickup.toLocaleTimeString()
+      );
+      alert("Orden creada con éxito");
+    } catch (error) {
+      alert("Error al crear la orden");
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const statusColor = statusColors[pedido.status];
 
   return (
-    <View style={styles.card}>
-      {/* Franja de estado */}
-      <View style={[styles.statusStrip, { backgroundColor: statusColor }]} />
+    <>
+      {loading && (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#0000ff" />
+          <Text>Cargando detalles del pedido...</Text>
+        </View>
+      )}
+      <View style={styles.card}>
+        {/* Franja de estado */}
+        <View style={[styles.statusStrip, { backgroundColor: statusColor }]} />
 
-      {/* Contenido de la tarjeta */}
-      <View style={styles.cardContent}>
-        <View style={styles.header}>
-          <Text style={styles.date}>
-            {pedido.created_at.split("T")[0]} -{" "}
-            {pedido.created_at.split("T")[1].split(".")[0]}
+        {/* Contenido de la tarjeta */}
+        <View style={styles.cardContent}>
+          <View style={styles.header}>
+            {/* <Text style={styles.date}>
+              {pedido.created_at.split("T")[0]} -{" "}
+              {pedido.created_at.split("T")[1].split(".")[0]}
+            </Text> */}
+
+            <Text style={[styles.status, { color: statusColor }]}>
+              Estado: {pedido.status}
+            </Text>
+
+            <Text style={styles.total}>${pedido.total}</Text>
+          </View>
+
+          <Text style={styles.details}>
+            Método de pago: {pedido.payment_type}
           </Text>
 
-          <Text style={styles.total}>${pedido.total}</Text>
-        </View>
+          {/* Botón e interacción */}
+          <View style={styles.actions}>
+            <Pressable onPress={handlePressProduct} style={styles.detailButton}>
+              <Text style={styles.detailButtonText}>Ver detalles</Text>
+            </Pressable>
 
-        <Text style={[styles.status, { color: statusColor }]}>
-          Estado: {pedido.status}
-        </Text>
+            <Pressable onPress={re_order} style={styles.detailButton}>
+              <Text style={styles.detailButtonText}>Ordenar nuevamente</Text>
+            </Pressable>
 
-        <Text style={styles.details}>
-          Método de pago: {pedido.payment_type}
-        </Text>
-        <Text style={styles.details}>Indicaciones: {pedido.message}</Text>
-
-        {/* Botón e interacción */}
-        <View style={styles.actions}>
-          <Pressable onPress={handlePressProduct} style={styles.detailButton}>
-            <Text style={styles.detailButtonText}>Ver detalles</Text>
-          </Pressable>
-          <TouchableOpacity onPress={toogleFav}>
-            <Ionicons
-              name={isfav ? "star-sharp" : "star-outline"}
-              size={24}
-              color="#FFD700"
-            />
-          </TouchableOpacity>
+            <TouchableOpacity onPress={toogleFav}>
+              <Ionicons
+                name={isfav ? "star-sharp" : "star-outline"}
+                size={24}
+                color="#FFD700"
+              />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </View>
+    </>
   );
 }
 
@@ -122,7 +180,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 8,
+    marginBottom: 4,
   },
   date: {
     fontSize: 14,
@@ -160,5 +218,10 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontSize: 14,
     fontWeight: "600",
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

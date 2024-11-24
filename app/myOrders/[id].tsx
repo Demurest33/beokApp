@@ -8,21 +8,8 @@ import {
   FlatList,
 } from "react-native";
 import { useLocalSearchParams, Link } from "expo-router";
-import { getOrderDetails } from "@/services/orders";
+import { getOrderDetails, order_product } from "@/services/orders";
 import { useEffect, useState } from "react";
-
-interface order_product {
-  id: number;
-  order_id: number;
-  product_id: number;
-  quantity: number;
-  price: number;
-  selected_options: { [key: string]: string }; // Cambié el tipo de selected_options para que sea un objeto
-  image_url: string;
-  product_name: string;
-  created_at: string;
-  updated_at: string;
-}
 
 export default function OrderDetails() {
   const { id, payment_type, pick_up_date, status, total, message, created_at } =
@@ -66,7 +53,7 @@ export default function OrderDetails() {
       <Text style={styles.info}>Método de pago: {payment_type}</Text>
       <Text style={styles.info}>Total: ${total}</Text>
       <Text style={styles.message}>
-        Observaciones: {message || "Sin observaciones"}
+        Indicaciones: {message || "Sin indicaciones"}
       </Text>
 
       <FlatList

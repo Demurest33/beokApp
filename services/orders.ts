@@ -31,6 +31,19 @@ export enum OrderStatus {
   cancelado = "cancelado",
 }
 
+export interface order_product {
+  id: number;
+  order_id: number;
+  product_id: number;
+  quantity: number;
+  price: number;
+  selected_options: { [key: string]: string };
+  image_url: string;
+  product_name: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export async function createOrder(orderData: Order, userId: number) {
   try {
     const response = await api.post("/orders", {
@@ -89,4 +102,19 @@ export async function toogleFavOrder(orderId: number) {
   }
 
   throw new Error("Hubo un problema marcando el pedido como favorito");
+}
+
+export async function reOrder(orderId: number, pick_up_date: string) {
+  const response = await api.post(`/orders/reorder`, {
+    order_id: orderId,
+    pick_up_date,
+  });
+
+  if (response.status == 200) {
+    return response.data;
+  }
+
+  console.log(response);
+
+  throw new Error("Hubo un problema reordenando el pedido");
 }
