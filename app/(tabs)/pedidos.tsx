@@ -1,4 +1,3 @@
-import { router } from "expo-router";
 import {
   StyleSheet,
   ActivityIndicator,
@@ -6,12 +5,12 @@ import {
   Text,
   FlatList,
   RefreshControl,
+  Switch,
 } from "react-native";
 import { getOrders } from "@/services/orders";
 import { useEffect, useState } from "react";
 import useUserStore from "@/store/userStore";
 import PedidoComponent from "@/components/Pedido";
-import { OrderStatus } from "@/services/orders";
 import { orderResponse } from "@/services/orders";
 
 export default function TabTwoScreen() {
@@ -19,9 +18,13 @@ export default function TabTwoScreen() {
   const [orders, setOrders] = useState<orderResponse[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [favourites, setFavourites] = useState<orderResponse[]>([]);
+  const [showFavourites, setShowFavourites] = useState(false);
 
   useEffect(() => {
     fetchOrders();
+
+    setFavourites(orders.filter((order) => order.is_fav));
   }, [userStore.user, refreshing]);
 
   async function fetchOrders() {
@@ -57,19 +60,58 @@ export default function TabTwoScreen() {
     );
   }
 
-  return (
-    <FlatList
-      refreshControl={
-        <RefreshControl
-          refreshing={false}
-          onRefresh={fetchOrders}
-          colors={["#000"]}
+  if (orders.length === 0) {
+    return (
+      <View style={styles.container}>
+        <Text>No tienes pedidos</Text>
+      </View>
+    );
+  }
+
+  if (showFavourites) {
+    return (
+      <>
+        <Switch
+          value={showFavourites}
+          onValueChange={(value) => setShowFavourites(value)}
         />
-      }
-      data={orders}
-      keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => <PedidoComponent {...item} />}
-    />
+
+        <FlatList
+          refreshControl={
+            <RefreshControl
+              refreshing={false}
+              onRefresh={fetchOrders}
+              colors={["#000"]}
+            />
+          }
+          data={favourites}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => <PedidoComponent {...item} />}
+        />
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Switch
+        value={showFavourites}
+        onValueChange={(value) => setShowFavourites(value)}
+      />
+
+      <FlatList
+        refreshControl={
+          <RefreshControl
+            refreshing={false}
+            onRefresh={fetchOrders}
+            colors={["#000"]}
+          />
+        }
+        data={orders}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => <PedidoComponent {...item} />}
+      />
+    </>
   );
 }
 

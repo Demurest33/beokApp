@@ -21,6 +21,7 @@ export interface orderResponse {
   total: number;
   updated_at: string;
   user_id: number;
+  is_fav: boolean;
 }
 
 export enum OrderStatus {
@@ -78,4 +79,14 @@ export async function getOrderDetails(orderId: number) {
   }
 
   throw new Error("Hubo un problema obteniendo el detalle de el pedido");
+}
+
+export async function toogleFavOrder(orderId: number) {
+  const response = await api.patch(`/orders/${orderId}/favorite`);
+
+  if (response.status == 200) {
+    return response.data;
+  }
+
+  throw new Error("Hubo un problema marcando el pedido como favorito");
 }

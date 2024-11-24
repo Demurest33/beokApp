@@ -1,18 +1,19 @@
 import {
   View,
   Text,
-  FlatList,
   StyleSheet,
-  Image,
   Pressable,
   TouchableOpacity,
 } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { OrderStatus } from "@/services/orders";
-import { orderResponse } from "@/services/orders";
+import { orderResponse, toogleFavOrder } from "@/services/orders";
+import { useState } from "react";
 
 export default function PedidoComponent(pedido: orderResponse) {
+  const [loading, setLoading] = useState(false);
+  const [isfav, setIsFav] = useState(pedido.is_fav);
+
   const handlePressProduct = () => {
     router.push({
       pathname: `/myOrders/[id]`,
@@ -33,6 +34,23 @@ export default function PedidoComponent(pedido: orderResponse) {
     listo: "#32CD32", // Verde
     entregado: "#1E90FF", // Azul
     cancelado: "#FF4500", // Rojo
+  };
+
+  const toogleFav = async () => {
+    if (loading) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await toogleFavOrder(pedido.id);
+      setIsFav((prev) => !prev);
+    } catch (error) {
+      alert("Error al marcar como favorito");
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const statusColor = statusColors[pedido.status];
@@ -60,15 +78,19 @@ export default function PedidoComponent(pedido: orderResponse) {
         <Text style={styles.details}>
           Método de pago: {pedido.payment_type}
         </Text>
-        <Text style={styles.details}>Observaciones: {pedido.message}</Text>
+        <Text style={styles.details}>Indicaciones: {pedido.message}</Text>
 
         {/* Botón e interacción */}
         <View style={styles.actions}>
           <Pressable onPress={handlePressProduct} style={styles.detailButton}>
             <Text style={styles.detailButtonText}>Ver detalles</Text>
           </Pressable>
-          <TouchableOpacity>
-            <Ionicons name="star-outline" size={24} color="#FFD700" />
+          <TouchableOpacity onPress={toogleFav}>
+            <Ionicons
+              name={isfav ? "star-sharp" : "star-outline"}
+              size={24}
+              color="#FFD700"
+            />
           </TouchableOpacity>
         </View>
       </View>
