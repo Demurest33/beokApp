@@ -13,11 +13,14 @@ import { useState, useEffect } from "react";
 import { productWithOptions } from "@/types/Menu";
 import CartProduct from "@/components/CartProduct";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import RadioForm from "react-native-simple-radio-button";
+import RadioForm, {
+  RadioButton,
+  RadioButtonLabel,
+  RadioButtonInput,
+} from "react-native-simple-radio-button";
 import { paymentType } from "@/store/cart";
 import { Order, createOrder } from "@/services/orders";
 import useUserStore from "@/store/userStore";
-import { User } from "@/types/User";
 
 export default function Carrito() {
   const cartStore = useCartStore();
@@ -40,6 +43,11 @@ export default function Carrito() {
   const [showTransferOption, setShowTransferOption] = useState(true);
   const [creatingOrder, setCreatingOrder] = useState(false);
   const [meesage, setMessage] = useState("");
+
+  const radio_props = [
+    { label: "Efectivo", value: paymentType.efectivo },
+    { label: "Transferencia", value: paymentType.transferencia },
+  ];
 
   useEffect(() => {
     setProducts(cartStore.products);
@@ -271,20 +279,30 @@ export default function Carrito() {
         />
       )}
 
-      <Text>Tipo de pago:</Text>
-      <RadioForm
-        style={{ flexDirection: "row", gap: 10 }}
-        radio_props={[
-          { label: "Efectivo", value: paymentType.efectivo },
-          ...(showTransferOption
-            ? [{ label: "Transferencia", value: paymentType.transferencia }]
-            : []),
-        ]}
-        initial={0}
-        onPress={(value) => {
-          setPago(value);
-        }}
-      />
+      <Text>Tipo de pago: {pago}</Text>
+      <RadioForm formHorizontal={true} animation={true}>
+        {radio_props.map((obj, i) => (
+          <RadioButton labelHorizontal={true} key={i}>
+            <RadioButtonInput
+              obj={obj}
+              index={i}
+              isSelected={pago === obj.value}
+              onPress={() => setPago(obj.value)}
+              buttonSize={16}
+              buttonOuterSize={24}
+              buttonInnerColor={"green"}
+              buttonOuterColor={pago === obj.value ? "green" : "gray"}
+            />
+            <RadioButtonLabel
+              obj={obj}
+              index={i}
+              labelStyle={{ fontSize: 16, marginRight: 8 }}
+              labelHorizontal={true}
+              onPress={() => setPago(obj.value)}
+            />
+          </RadioButton>
+        ))}
+      </RadioForm>
 
       <Pressable onPress={handleOrder}>
         <Text>Enviar orden</Text>

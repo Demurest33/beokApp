@@ -1,11 +1,22 @@
-import { View, Text, Image, StyleSheet, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  Pressable,
+  ScrollView,
+} from "react-native";
 import { useLocalSearchParams, Link } from "expo-router";
 import { useEffect, useState } from "react";
 import { ProductOption, productWithOptions } from "@/types/Menu";
 import { getProductOptions } from "@/services/menu";
-import RadioForm from "react-native-simple-radio-button";
+import RadioForm, {
+  RadioButton,
+  RadioButtonInput,
+  RadioButtonLabel,
+  RadioButtonProps,
+} from "react-native-simple-radio-button";
 import useCartStore from "@/store/cart";
-import { addWhitelistedNativeProps } from "react-native-reanimated/lib/typescript/ConfigHelper";
 
 export default function ProductComponent() {
   const cartStore = useCartStore();
@@ -114,7 +125,7 @@ export default function ProductComponent() {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Image source={{ uri: image_url as string }} style={styles.image} />
       <Text style={styles.productName}>{name}</Text>
       <Text style={styles.description}>{description}</Text>
@@ -122,24 +133,62 @@ export default function ProductComponent() {
 
       {/* make radio buttons */}
 
+      {loading && <Text>Cargando opciones...</Text>}
+
       {options.map((option) => (
         <View key={option.id}>
           <Text style={styles.optionName}>{option.name}</Text>
 
           <RadioForm
-            radio_props={option.values.map((value) => ({
-              label: value,
-              value: value,
-            }))}
+            formHorizontal={option.values.length < 4}
+            animation
+            style={styles.radiobuttonform}
+            // radio_props={ => ({
+            //   label: value,
+            //   value: value,
+            // }))}
+            accessibilityLabel="radio"
             initial={0}
-            onPress={(value) => {
-              // console.log(option.prices?.[option.values.indexOf(value)] || 0);
-              setSelectedOptions({
-                ...selectedOptions,
-                [option.name]: value,
-              });
-            }}
-          />
+            // onPress={(value) => {
+            //   // console.log(option.prices?.[option.values.indexOf(value)] || 0);
+            //   setSelectedOptions({
+            //     ...selectedOptions,
+            //     [option.name]: value,
+            //   });
+            // }}
+          >
+            {option.values.map((value) => (
+              <RadioButton labelHorizontal key={value}>
+                <RadioButtonInput
+                  buttonInnerColor="green"
+                  buttonOuterColor="green"
+                  obj={{ label: value, value: value }}
+                  index={option.values.indexOf(value)}
+                  isSelected={selectedOptions[option.name] === value}
+                  buttonSize={16}
+                  buttonWrapStyle={{ marginRight: 6 }}
+                  onPress={(value) => {
+                    // console.log(option.prices?.[option.values.indexOf(value)] || 0);
+                    setSelectedOptions({
+                      ...selectedOptions,
+                      [option.name]: value,
+                    });
+                  }}
+                />
+                <RadioButtonLabel
+                  obj={{ label: value, value: value }}
+                  index={option.values.indexOf(value)}
+                  onPress={(value) => {
+                    // console.log(option.prices?.[option.values.indexOf(value)] || 0);
+                    setSelectedOptions({
+                      ...selectedOptions,
+                      [option.name]: value,
+                    });
+                  }}
+                />
+              </RadioButton>
+            ))}
+          </RadioForm>
         </View>
       ))}
 
@@ -169,7 +218,7 @@ export default function ProductComponent() {
       >
         <Text>Añadir al carrito</Text>
       </Pressable>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -219,5 +268,18 @@ const styles = StyleSheet.create({
   },
   optionValue: {
     fontSize: 16,
+  },
+  radiobuttonformRow: {
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+    marginBottom: 10,
+  },
+
+  radiobuttonform: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 10,
   },
 });
