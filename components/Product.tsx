@@ -28,9 +28,18 @@ export default function ProductComponent({ product }: { product: Product }) {
       <Pressable onPress={handlePressProduct}>
         <Image source={{ uri: product.image_url }} style={styles.image} />
       </Pressable>
-      <Text style={styles.productName}>{product.name}</Text>
-      <Text style={styles.description}>{product.description}</Text>
-      <Text style={styles.price}>${product.price}</Text>
+      {/* que el nombre del producto no supere el ancho de la iamgen */}
+      <View
+        style={{
+          width: 100,
+          justifyContent: "center",
+          marginTop: 5,
+        }}
+      >
+        <Text style={styles.productName}>{product.name}</Text>
+        <Text style={styles.price}>${product.price}</Text>
+      </View>
+      {/* <Text style={styles.description}>{product.description}</Text> */}
     </View>
   );
 }
@@ -39,7 +48,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, padding: 10 },
   category: { marginBottom: 20 },
   categoryName: { fontSize: 18, fontWeight: "bold", marginBottom: 10 },
-  product: { marginBottom: 15, alignItems: "center" },
+  product: { alignItems: "center", marginRight: 10, marginBottom: 6 },
   image: { width: 100, height: 100, borderRadius: 10 },
   productName: { fontSize: 16, fontWeight: "bold" },
   description: { fontSize: 14, color: "gray" },

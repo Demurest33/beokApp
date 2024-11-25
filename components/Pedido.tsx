@@ -10,22 +10,11 @@ import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { orderResponse, toogleFavOrder } from "@/services/orders";
 import { useState } from "react";
-import {
-  createOrder,
-  Order,
-  getOrderDetails,
-  order_product,
-} from "@/services/orders";
-import useUserStore from "@/store/userStore";
-import { paymentType } from "@/store/cart";
-import { productWithOptions } from "@/types/Menu";
 import { reOrder } from "@/services/orders";
 
 export default function PedidoComponent(pedido: orderResponse) {
   const [loading, setLoading] = useState(false);
   const [isfav, setIsFav] = useState(pedido.is_fav);
-  const userStore = useUserStore();
-  const [orderDetails, setOrderDetails] = useState<order_product[]>([]);
   const handlePressProduct = () => {
     router.push({
       pathname: `/myOrders/[id]`,
@@ -84,13 +73,13 @@ export default function PedidoComponent(pedido: orderResponse) {
 
     try {
       setLoading(true);
-      await reOrder(
+      const res = await reOrder(
         pedido.id,
         thirtyMinutesBeforePickup.toLocaleDateString() +
           " " +
           thirtyMinutesBeforePickup.toLocaleTimeString()
       );
-      alert("Orden creada con éxito");
+      alert(res.message);
     } catch (error) {
       alert("Error al crear la orden");
       console.log(error);

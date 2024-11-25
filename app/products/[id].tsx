@@ -79,6 +79,7 @@ export default function ProductComponent() {
         const valueIndex = option.values.indexOf(selectedOptions[option.name]);
         return option.prices?.[valueIndex] || 0;
       }),
+      totalPrice: priceTotal,
     };
 
     cartStore.addProduct(productWithOptions);
@@ -132,7 +133,7 @@ export default function ProductComponent() {
             }))}
             initial={0}
             onPress={(value) => {
-              console.log(option.prices?.[option.values.indexOf(value)] || 0);
+              // console.log(option.prices?.[option.values.indexOf(value)] || 0);
               setSelectedOptions({
                 ...selectedOptions,
                 [option.name]: value,
@@ -193,6 +194,7 @@ const styles = StyleSheet.create({
     width: 400,
     height: 200,
     borderRadius: 10,
+    resizeMode: "contain",
   },
   productName: {
     fontSize: 24,

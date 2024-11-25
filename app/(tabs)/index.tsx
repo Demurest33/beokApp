@@ -39,17 +39,23 @@ export default function HomeScreen() {
   }
 
   async function getUserData() {
-    const user: User = await getUser();
-    if (user !== null) {
-      userStore.setUser(user);
+    try {
+      const user: User = await getUser();
+      if (user !== null) {
+        userStore.setUser(user);
 
-      if (user.role === Role.ADMIN || user.role === Role.AXULIAR) {
-        router.replace("/admin");
-      }
+        if (user.role === Role.ADMIN || user.role === Role.AXULIAR) {
+          router.replace("/admin");
+        }
 
-      if (user.role === Role.CLIENTE) {
-        router.replace("/(tabs)/");
+        if (user.role === Role.CLIENTE) {
+          router.replace("/(tabs)/");
+        }
       }
+    } catch (error) {
+      alert("Error al obtener los datos del usuario");
+    } finally {
+      setLoading(false);
     }
   }
 

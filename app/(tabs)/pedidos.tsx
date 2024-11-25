@@ -40,9 +40,9 @@ export default function TabTwoScreen() {
         if (orders) {
           setOrders(orders);
         }
-        setOrders(orders);
       } catch (error) {
         console.error("Error al obtener los pedidos:", error);
+        alert("Error al obtener los pedidos");
       } finally {
         setLoading(false);
       }
@@ -61,6 +61,14 @@ export default function TabTwoScreen() {
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" color="#000" />
+      </View>
+    );
+  }
+
+  if (!orders) {
+    return (
+      <View style={styles.container}>
+        <Text>No se encontraron pedidos</Text>
       </View>
     );
   }
