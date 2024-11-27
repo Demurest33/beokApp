@@ -28,6 +28,13 @@ export default function Layout() {
           options={{
             drawerLabel: "Usuarios",
             title: "Administrar usuarios",
+            drawerIcon: ({ focused, size }) => (
+              <Ionicons
+                name="people-outline"
+                size={size}
+                color={focused ? "#7cc" : "#ccc"}
+              />
+            ),
           }}
         />
 
@@ -36,6 +43,13 @@ export default function Layout() {
           options={{
             drawerLabel: "Menu",
             title: "Administrar menu",
+            drawerIcon: ({ focused, size }) => (
+              <Ionicons
+                name="fast-food-outline"
+                size={size}
+                color={focused ? "#7cc" : "#ccc"}
+              />
+            ),
           }}
         />
 
@@ -44,6 +58,13 @@ export default function Layout() {
           options={{
             drawerLabel: "Pedidos",
             title: "Pedidos de los clientes",
+            drawerIcon: ({ focused, size }) => (
+              <Ionicons
+                name="cart-outline"
+                size={size}
+                color={focused ? "#7cc" : "#ccc"}
+              />
+            ),
           }}
         />
 
@@ -57,6 +78,13 @@ export default function Layout() {
           options={{
             drawerLabel: "Cerrar sesión",
             title: "Cerrar sesión",
+            drawerIcon: ({ focused, size }) => (
+              <Ionicons
+                name="log-out-outline"
+                size={size}
+                color={focused ? "#7cc" : "#ccc"}
+              />
+            ),
           }}
         />
       </Drawer>

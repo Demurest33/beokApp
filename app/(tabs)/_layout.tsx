@@ -21,7 +21,7 @@ export default function HomeLayout() {
           title: "Menu",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={focused ? "home" : "home-outline"}
+              name={focused ? "fast-food" : "fast-food-outline"}
               color={color}
             />
           ),
@@ -33,7 +33,7 @@ export default function HomeLayout() {
           title: "Pedidos",
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={focused ? "code-slash" : "code-slash-outline"}
+              name={focused ? "document-text" : "document-text-outline"}
               color={color}
             />
           ),
