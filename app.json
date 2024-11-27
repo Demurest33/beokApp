@@ -28,7 +28,15 @@
     },
     "plugins": [
       "expo-router",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Permite a $(PRODUCT_NAME) el uso de la cámara",
+          "microphonePermission": "Permite a $(PRODUCT_NAME) el uso del micrófono",
+          "usageDescription": "La cámara es necesaria para tomar fotos y grabar"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

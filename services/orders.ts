@@ -22,6 +22,7 @@ export interface orderResponse {
   updated_at: string;
   user_id: number;
   is_fav: boolean;
+  hash: string;
 }
 
 export enum OrderStatus {
@@ -42,6 +43,11 @@ export interface order_product {
   product_name: string;
   created_at: string;
   updated_at: string;
+}
+
+export interface decodeQrResponse {
+  order: orderResponse;
+  order_products: order_product[];
 }
 
 export async function createOrder(orderData: Order, userId: number) {
@@ -117,4 +123,18 @@ export async function reOrder(orderId: number, pick_up_date: string) {
   console.log(response);
 
   throw new Error("Hubo un problema reordenando el pedido");
+}
+
+export async function decodeQr(hash: string) {
+  try {
+    const response = await api.post(`/decode-qr`, {
+      hash: hash,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error al decodificar el código QR:", error);
+
+    return null;
+  }
 }

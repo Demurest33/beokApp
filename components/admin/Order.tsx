@@ -1,19 +1,7 @@
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  Pressable,
-  ActivityIndicator,
-  FlatList,
-  ScrollView,
-} from "react-native";
-import { useLocalSearchParams, Link } from "expo-router";
-import { getOrderDetails, order_product } from "@/services/orders";
-import { useEffect, useState } from "react";
-import QrCode from "@/components/QrCode";
+import { View, Text, StyleSheet, FlatList } from "react-native";
+import { decodeQrResponse } from "@/services/orders";
 
-export default function OrderDetails() {
+export default function Order({ order }: { order: decodeQrResponse }) {
   const {
     id,
     payment_type,
@@ -23,36 +11,7 @@ export default function OrderDetails() {
     message,
     created_at,
     hash,
-  } = useLocalSearchParams();
-
-  const [orderDetails, setOrderDetails] = useState<order_product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [preciototal, setPrecioTotal] = useState(0);
-
-  useEffect(() => {
-    async function fetchOrderDetails() {
-      try {
-        setLoading(true);
-        const details = await getOrderDetails(Number(id)); // Llamamos a la API
-        setOrderDetails(details);
-      } catch (error) {
-        console.error("Error al obtener los detalles del pedido:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchOrderDetails();
-  }, [id]);
-
-  if (loading) {
-    return (
-      <View style={styles.loaderContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-        <Text>Cargando detalles del pedido...</Text>
-      </View>
-    );
-  }
+  } = order.order;
 
   return (
     <FlatList
@@ -70,7 +29,7 @@ export default function OrderDetails() {
           </Text>
         </View>
       }
-      data={orderDetails}
+      data={order.order_products}
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => (
         <View style={styles.productContainer}>
@@ -89,7 +48,7 @@ export default function OrderDetails() {
           )}
         </View>
       )}
-      ListFooterComponent={<QrCode pedidoId={hash.toString()} />}
+      // ListFooterComponent={<QrCode pedidoId={hash.toString()} />}
       ListEmptyComponent={<Text>No hay productos en este pedido.</Text>}
     />
   );

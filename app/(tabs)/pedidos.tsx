@@ -73,14 +73,6 @@ export default function TabTwoScreen() {
     );
   }
 
-  if (orders.length === 0) {
-    return (
-      <View style={styles.container}>
-        <Text>No tienes pedidos</Text>
-      </View>
-    );
-  }
-
   if (showFavourites) {
     return (
       <>

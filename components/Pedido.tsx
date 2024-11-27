@@ -26,6 +26,7 @@ export default function PedidoComponent(pedido: orderResponse) {
         total: pedido.total,
         message: pedido.message,
         created_at: pedido.created_at,
+        hash: pedido.hash,
       },
     });
   };
