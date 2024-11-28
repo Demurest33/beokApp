@@ -21,6 +21,10 @@ export default function HomeScreen() {
       <Link href={"/register"}>
         <Text style={styles.register}>Register</Text>
       </Link>
+
+      <Link href={"/(tabs)/"}>
+        <Text style={styles.register}>Ver el menú</Text>
+      </Link>
     </View>
   );
 }

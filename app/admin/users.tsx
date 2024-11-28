@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import { View, Text, StyleSheet, FlatList, RefreshControl } from "react-native";
 import UserCard from "@/components/admin/UserCard";
 import { User as UserType } from "@/types/User";
 import { useEffect, useState } from "react";
@@ -31,6 +31,9 @@ export default function UsersScreen() {
           data={users}
           keyExtractor={(user) => user.id}
           renderItem={({ item }) => <UserCard {...item} />}
+          refreshControl={
+            <RefreshControl refreshing={loading} onRefresh={fetchUsers} />
+          }
         />
       )}
     </View>

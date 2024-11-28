@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, FlatList } from "react-native";
 import { decodeQrResponse } from "@/services/orders";
+import MyPicker from "./Picker";
 
 export default function Order({ order }: { order: decodeQrResponse }) {
   const {
@@ -48,7 +49,7 @@ export default function Order({ order }: { order: decodeQrResponse }) {
           )}
         </View>
       )}
-      // ListFooterComponent={<QrCode pedidoId={hash.toString()} />}
+      ListFooterComponent={<MyPicker orderID={id} key={id} />}
       ListEmptyComponent={<Text>No hay productos en este pedido.</Text>}
     />
   );

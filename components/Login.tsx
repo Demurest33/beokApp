@@ -24,6 +24,18 @@ export default function LoginScreen() {
       return;
     }
 
+    if (phone === "" || password === "") {
+      alert("Todos los campos son requeridos");
+      return;
+    }
+
+    const phoneRegex = /^[0-9]{10}$/;
+
+    if (!phoneRegex.test(phone)) {
+      alert("El número de teléfono no valido");
+      return;
+    }
+
     try {
       setLoading(true);
       const response: User = await loginUser({ phone, password });

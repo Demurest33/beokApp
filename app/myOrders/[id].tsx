@@ -11,7 +11,10 @@ import {
 import { useLocalSearchParams, Link } from "expo-router";
 import { getOrderDetails, order_product } from "@/services/orders";
 import { useEffect, useState } from "react";
+import useUserStore from "@/store/userStore";
 import QrCode from "@/components/QrCode";
+import MyPicker from "@/components/admin/Picker";
+import { Role } from "@/types/User";
 
 export default function OrderDetails() {
   const {
@@ -27,7 +30,7 @@ export default function OrderDetails() {
 
   const [orderDetails, setOrderDetails] = useState<order_product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [preciototal, setPrecioTotal] = useState(0);
+  const userStore = useUserStore();
 
   useEffect(() => {
     async function fetchOrderDetails() {
@@ -89,7 +92,16 @@ export default function OrderDetails() {
           )}
         </View>
       )}
-      ListFooterComponent={<QrCode pedidoId={hash.toString()} />}
+      ListFooterComponent={
+        userStore.user?.role === Role.ADMIN ? (
+          <MyPicker
+            orderID={parseInt(id.toString())}
+            key={parseInt(id.toString())}
+          />
+        ) : (
+          <QrCode pedidoId={hash.toString()} />
+        )
+      }
       ListEmptyComponent={<Text>No hay productos en este pedido.</Text>}
     />
   );
