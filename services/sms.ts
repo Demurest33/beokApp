@@ -12,10 +12,19 @@ interface VerifySmsResponse {
 }
 
 export async function getSms(phone: string) {
-  const reponse = await api.post("/send-sms", phone); // dummy -> /dummy-send-sms
+  const reponse = await api.post("/send-sms", {
+    phone: "+52" + phone,
+  }); // dummy -> /dummy-send-sms
   const data = reponse.data as SmsResponse;
 
   return data;
+}
+
+export async function sendWhatsapp(phone: string) {
+  const response = await api.post("/send-whatsApp", {
+    phone: "+52" + phone,
+  });
+  return response.data;
 }
 
 export async function verifySms(params: VerifySmsResponse) {

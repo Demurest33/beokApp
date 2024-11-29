@@ -13,13 +13,22 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "infoPlist": {
+        "NSAppTransportSecurity": { "NSAllowsArbitraryLoads": true }
+      },
+      "supportsTablet": true,
+      "bundleIdentifier": "com.demurest.beokApp"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.demurest.beokApp"
     },
     "web": {
       "bundler": "metro",
@@ -36,13 +45,30 @@
           "microphonePermission": "Permite a $(PRODUCT_NAME) el uso del micrófono",
           "usageDescription": "La cámara es necesaria para tomar fotos y grabar"
         }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true // ? enable HTTP requests
+          },
+          "ios": {
+            "flipper": true
+          }
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true
     },
     "extra": {
-      "BASE_URL": "http://192.168.1.75:8080/api"
+      "BASE_URL": "http://192.168.1.75:8080/api", //161.35.108.188
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "50409f7d-1eda-4c65-8dc5-78ccf8c0b27c"
+      }
     }
   }
 }

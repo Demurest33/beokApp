@@ -16,14 +16,13 @@ import { orderResponse } from "@/services/orders";
 export default function TabTwoScreen() {
   const userStore = useUserStore();
   const [orders, setOrders] = useState<orderResponse[]>([]);
-  const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [favourites, setFavourites] = useState<orderResponse[]>([]);
   const [showFavourites, setShowFavourites] = useState(false);
 
   useEffect(() => {
     fetchOrders();
-  }, [userStore.user, refreshing]);
+  }, [userStore.user]);
 
   useEffect(() => {
     if (orders.length > 0) {
