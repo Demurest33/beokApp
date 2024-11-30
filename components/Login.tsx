@@ -85,16 +85,7 @@ export default function LoginScreen() {
 
       {/* replace   |   asChild*/}
       <Pressable style={styles.button} onPress={handleLogin}>
-        <Text
-          style={{
-            color: "white",
-            textAlign: "center",
-            fontSize: 20,
-            fontWeight: "bold",
-          }}
-        >
-          Iniciar Sesión
-        </Text>
+        <Text style={styles.buttonText}>Iniciar Sesión</Text>
       </Pressable>
     </View>
   );
@@ -129,6 +120,12 @@ const styles = StyleSheet.create({
     borderColor: "#3D9D3D",
     borderWidth: 1,
     elevation: 5,
+  },
+  buttonText: {
+    color: "white",
+    textAlign: "center",
+    fontSize: 20,
+    fontWeight: "bold",
   },
   input: {
     borderColor: "gray",

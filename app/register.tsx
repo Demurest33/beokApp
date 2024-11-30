@@ -66,64 +66,32 @@ export default function RegisterScreen() {
     <View style={styles.stepContainer}>
       <View style={styles.titleContainer}>
         <TextInput
-          style={{
-            flex: 1,
-            height: 40,
-            borderColor: "gray",
-            borderWidth: 1,
-            paddingLeft: 8,
-            fontSize: 16,
-          }}
+          style={[styles.input, { flex: 1 }]}
           placeholder="Nombre(s)"
           onChangeText={setName}
         />
 
         <TextInput
-          style={{
-            flex: 1.5,
-            height: 40,
-            borderColor: "gray",
-            borderWidth: 1,
-            paddingLeft: 8,
-            fontSize: 16,
-          }}
+          style={[styles.input, { flex: 1.5 }]}
           placeholder="Apellido(s)"
           onChangeText={setLastName}
         />
       </View>
 
       <TextInput
-        style={{
-          height: 40,
-          borderColor: "gray",
-          borderWidth: 1,
-          paddingLeft: 8,
-          fontSize: 16,
-        }}
-        placeholder="Teléfono"
+        style={[styles.input]}
+        placeholder="Teléfono (WhatsApp)"
         onChangeText={setPhone}
       />
 
       <TextInput
-        style={{
-          height: 40,
-          borderColor: "gray",
-          borderWidth: 1,
-          paddingLeft: 8,
-          fontSize: 16,
-        }}
+        style={[styles.input]}
         placeholder="Contraseña"
         onChangeText={setPassword}
       />
 
       <TextInput
-        style={{
-          height: 40,
-          borderColor: "gray",
-          borderWidth: 1,
-          paddingLeft: 8,
-          fontSize: 16,
-        }}
+        style={[styles.input]}
         placeholder="Confirmar contraseña"
         onChangeText={setConfirmPassword}
       />
@@ -132,15 +100,7 @@ export default function RegisterScreen() {
 
       {/* replace   |   asChild*/}
       <Pressable style={styles.button} onPress={handleRegister}>
-        <Text
-          style={{
-            color: "white",
-            textAlign: "center",
-            fontSize: 16,
-          }}
-        >
-          Registro
-        </Text>
+        <Text style={styles.buttonText}>Registro</Text>
       </Pressable>
     </View>
   );
@@ -155,12 +115,39 @@ const styles = StyleSheet.create({
   stepContainer: {
     display: "flex",
     flexDirection: "column",
+    backgroundColor: "#fff",
     gap: 8,
     padding: 16,
+    flex: 1,
   },
   button: {
-    backgroundColor: "blue",
     padding: 10,
     borderRadius: 5,
+    backgroundColor: "#3D9D3D",
+    minWidth: 300,
+    textAlign: "center",
+    fontSize: 16,
+    fontWeight: "bold",
+    borderColor: "#3D9D3D",
+    borderWidth: 1,
+    elevation: 5,
+  },
+  buttonText: {
+    color: "white",
+    textAlign: "center",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  input: {
+    borderColor: "gray",
+    borderWidth: 1,
+    width: "100%",
+    borderRadius: 5,
+    textAlign: "center",
+    padding: 10,
+    fontSize: 22,
+    backgroundColor: "#FBFBFB",
+    elevation: 1,
+    fontWeight: "bold",
   },
 });
