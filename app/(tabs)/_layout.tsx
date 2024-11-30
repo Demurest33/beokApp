@@ -4,25 +4,30 @@ import React from "react";
 import { TabBarIcon } from "@/components/navigation/TabBarIcon";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import Header from "@/components/Header";
 
 export default function HomeLayout() {
   const colorScheme = useColorScheme();
 
   return (
     <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-        headerShown: true,
-      }}
+      screenOptions={({ navigation }) => ({
+        header: ({ navigation }) => (
+          <Header navigation={navigation} canGoBack={false} />
+        ),
+        tabBarStyle: {
+          backgroundColor: Colors[colorScheme ?? "light"].background,
+        },
+      })}
     >
       <Tabs.Screen
         name="index"
         options={{
           title: "Menu",
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ focused }) => (
             <TabBarIcon
               name={focused ? "fast-food" : "fast-food-outline"}
-              color={color}
+              color={"#3D9D3D"}
             />
           ),
         }}
@@ -31,10 +36,10 @@ export default function HomeLayout() {
         name="pedidos"
         options={{
           title: "Pedidos",
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ focused }) => (
             <TabBarIcon
               name={focused ? "document-text" : "document-text-outline"}
-              color={color}
+              color={"#3D9D3D"}
             />
           ),
         }}
@@ -44,10 +49,10 @@ export default function HomeLayout() {
         name="carrito"
         options={{
           title: "Carrito",
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ focused }) => (
             <TabBarIcon
               name={focused ? "cart" : "cart-outline"}
-              color={color}
+              color={"#3D9D3D"}
             />
           ),
         }}
@@ -57,10 +62,10 @@ export default function HomeLayout() {
         name="profile"
         options={{
           title: "Perfil",
-          tabBarIcon: ({ color, focused }) => (
+          tabBarIcon: ({ focused }) => (
             <TabBarIcon
               name={focused ? "person" : "person-outline"}
-              color={color}
+              color={"#3D9D3D"}
             />
           ),
         }}

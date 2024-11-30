@@ -12,12 +12,17 @@ export default function Layout() {
           name="index"
           options={{
             drawerLabel: "Escaner",
-            title: "Escanear pedido",
+            title: "Escanear código QR",
+            headerTintColor: "#fff",
+            headerStyle: {
+              backgroundColor: "#3D9D3D",
+            },
+
             drawerIcon: ({ focused, size }) => (
               <Ionicons
                 name="qr-code-outline"
                 size={size}
-                color={focused ? "#7cc" : "#ccc"}
+                color={focused ? "#3D9D3D" : "#ccc"}
               />
             ),
           }}
@@ -28,11 +33,16 @@ export default function Layout() {
           options={{
             drawerLabel: "Usuarios",
             title: "Administrar usuarios",
+            headerTintColor: "#fff",
+            headerStyle: {
+              backgroundColor: "#3D9D3D",
+            },
+
             drawerIcon: ({ focused, size }) => (
               <Ionicons
                 name="people-outline"
                 size={size}
-                color={focused ? "#7cc" : "#ccc"}
+                color={focused ? "#3D9D3D" : "#ccc"}
               />
             ),
           }}
@@ -43,11 +53,16 @@ export default function Layout() {
           options={{
             drawerLabel: "Menu",
             title: "Administrar menu",
+            headerTintColor: "#fff",
+            headerStyle: {
+              backgroundColor: "#3D9D3D",
+            },
+
             drawerIcon: ({ focused, size }) => (
               <Ionicons
                 name="fast-food-outline"
                 size={size}
-                color={focused ? "#7cc" : "#ccc"}
+                color={focused ? "#3D9D3D" : "#ccc"}
               />
             ),
           }}
@@ -58,11 +73,16 @@ export default function Layout() {
           options={{
             drawerLabel: "Pedidos",
             title: "Pedidos de los clientes",
+            headerTintColor: "#fff",
+            headerStyle: {
+              backgroundColor: "#3D9D3D",
+            },
+
             drawerIcon: ({ focused, size }) => (
               <Ionicons
                 name="cart-outline"
                 size={size}
-                color={focused ? "#7cc" : "#ccc"}
+                color={focused ? "#3D9D3D" : "#ccc"}
               />
             ),
           }}
@@ -82,7 +102,7 @@ export default function Layout() {
               <Ionicons
                 name="log-out-outline"
                 size={size}
-                color={focused ? "#7cc" : "#ccc"}
+                color={focused ? "#3D9D3D" : "#ccc"}
               />
             ),
           }}
