@@ -6,12 +6,15 @@ import {
   FlatList,
   RefreshControl,
   Switch,
+  Pressable,
 } from "react-native";
 import { getOrders } from "@/services/orders";
 import { useEffect, useState } from "react";
 import useUserStore from "@/store/userStore";
 import PedidoComponent from "@/components/Pedido";
 import { orderResponse } from "@/services/orders";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 
 export default function TabTwoScreen() {
   const userStore = useUserStore();
@@ -30,6 +33,10 @@ export default function TabTwoScreen() {
       setFavourites(favs);
     }
   }, [orders]);
+
+  const goLogin = () => {
+    router.replace("/login");
+  };
 
   async function fetchOrders() {
     if (userStore.user !== null) {
@@ -50,24 +57,17 @@ export default function TabTwoScreen() {
 
   if (userStore.user === null) {
     return (
-      <View style={styles.container}>
-        <Text>Debes iniciar sesión para ver tus pedidos</Text>
-      </View>
+      <Pressable style={styles.loginContainer} onPress={goLogin}>
+        <Ionicons name="log-in-sharp" size={80} color="gray" />
+        <Text style={styles.text}>Incia sesión para hacer pedidos</Text>
+      </Pressable>
     );
   }
 
   if (loading) {
     return (
-      <View style={styles.container}>
+      <View>
         <ActivityIndicator size="large" color="#000" />
-      </View>
-    );
-  }
-
-  if (!orders) {
-    return (
-      <View style={styles.container}>
-        <Text>No se encontraron pedidos</Text>
       </View>
     );
   }
@@ -98,27 +98,47 @@ export default function TabTwoScreen() {
 
   return (
     <>
-      <Switch
-        value={showFavourites}
-        onValueChange={(value) => setShowFavourites(value)}
-      />
-
-      <FlatList
-        refreshControl={
-          <RefreshControl
-            refreshing={false}
-            onRefresh={fetchOrders}
-            colors={["#000"]}
+      {orders ? (
+        <Pressable style={styles.loginContainer}>
+          <Ionicons name="document-text" size={80} color="gray" />
+          <Text style={styles.text}>Aun no haces pedidos</Text>
+        </Pressable>
+      ) : (
+        <>
+          <Switch
+            value={showFavourites}
+            onValueChange={(value) => setShowFavourites(value)}
           />
-        }
-        data={orders}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <PedidoComponent {...item} />}
-      />
+          <FlatList
+            refreshControl={
+              <RefreshControl
+                refreshing={false}
+                onRefresh={fetchOrders}
+                colors={["#000"]}
+              />
+            }
+            data={orders}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => <PedidoComponent {...item} />}
+          />
+        </>
+      )}
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {},
+  loginContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
+  },
+  text: {
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    padding: 16,
+    maxWidth: 200,
+  },
 });

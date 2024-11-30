@@ -75,7 +75,7 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 10 },
+  container: { flex: 1, padding: 10, backgroundColor: "#fff" },
   category: { marginBottom: 20 },
   categoryName: { fontSize: 18, fontWeight: "bold", marginBottom: 10 },
   product: { marginBottom: 15, alignItems: "center" },

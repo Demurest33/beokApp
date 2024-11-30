@@ -1,5 +1,5 @@
 import { Text, View, StyleSheet, Pressable } from "react-native";
-import { Link, router } from "expo-router";
+import { router } from "expo-router";
 import useUserStore from "@/store/userStore";
 import { useEffect, useState } from "react";
 import { User } from "@/types/User";
@@ -24,7 +24,7 @@ export default function ProfileScreen() {
         <ProfileComponent />
       ) : (
         <Pressable style={styles.loginContainer} onPress={goLogin}>
-          <Ionicons name="person" size={80} color="gray" />
+          <Ionicons name="log-in-sharp" size={80} color="gray" />
           <Text style={styles.text}>Incia sesión para hacer pedidos</Text>
         </Pressable>
       )}
@@ -34,7 +34,6 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   stepContainer: {
-    marginBottom: 8,
     flex: 1,
     backgroundColor: "white",
   },
