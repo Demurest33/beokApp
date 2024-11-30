@@ -63,20 +63,24 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.stepContainer}>
-      <Text style={styles.titleContainer}>Login</Text>
+      <Text style={styles.title}>Incia sesión con tu número</Text>
 
       {loading ? <ActivityIndicator size="large" color="#000" /> : null}
 
       <TextInput
-        style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
-        placeholder="Número celular"
+        style={styles.input}
+        placeholder="Teléfono (WhatsApp)"
+        keyboardType="phone-pad"
+        accessibilityHint="phone"
         onChangeText={setphone}
       />
 
       <TextInput
-        style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
-        placeholder="Password"
+        style={styles.input}
+        placeholder="Contraseña"
         onChangeText={setPassword}
+        secureTextEntry={true}
+        accessibilityHint="password"
       />
 
       {/* replace   |   asChild*/}
@@ -85,9 +89,11 @@ export default function LoginScreen() {
           style={{
             color: "white",
             textAlign: "center",
+            fontSize: 20,
+            fontWeight: "bold",
           }}
         >
-          Login
+          Iniciar Sesión
         </Text>
       </Pressable>
     </View>
@@ -95,19 +101,46 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "#534E4E",
+    marginBottom: 16,
   },
   stepContainer: {
     display: "flex",
+    height: "70%",
     flexDirection: "column",
-    gap: 8,
-    padding: 16,
+    gap: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    alignItems: "center",
+    marginBottom: 16,
   },
   button: {
-    backgroundColor: "blue",
     padding: 10,
     borderRadius: 5,
+    backgroundColor: "#3D9D3D",
+    minWidth: 300,
+    textAlign: "center",
+    fontSize: 16,
+    fontWeight: "bold",
+    borderColor: "#3D9D3D",
+    borderWidth: 1,
+    elevation: 5,
+  },
+  input: {
+    borderColor: "gray",
+    borderWidth: 1,
+    width: "100%",
+    maxWidth: 300,
+    borderRadius: 5,
+    textAlign: "center",
+    padding: 10,
+    fontSize: 22,
+    backgroundColor: "#FBFBFB",
+    elevation: 1,
+    fontWeight: "bold",
   },
 });

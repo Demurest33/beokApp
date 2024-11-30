@@ -4,6 +4,7 @@ import LoginScreen from "@/components/Login";
 import useUserStore from "@/store/userStore";
 import { useEffect, useState } from "react";
 import { User } from "@/types/User";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function HomeScreen() {
   const [user, setUser] = useState<User | null>(null);
@@ -18,36 +19,54 @@ export default function HomeScreen() {
     <View style={styles.stepContainer}>
       <LoginScreen />
 
-      <Link href={"/register"}>
-        <Text style={styles.register}>Register</Text>
-      </Link>
+      <View style={styles.links}>
+        <Link href={"/register"} style={styles.button}>
+          <Ionicons name="person-add-outline" size={20} color="#3D9D3D" />
 
-      <Link href={"/(tabs)/"}>
-        <Text style={styles.register}>Ver el menú</Text>
-      </Link>
+          <Text> Registro</Text>
+        </Link>
+
+        <Link href={"/(tabs)/"} style={styles.button}>
+          <Ionicons
+            name="fast-food-outline"
+            size={20}
+            color="#3D9D3D"
+            style={{ marginRight: 14 }}
+          />
+          <Text> Ver el menú</Text>
+        </Link>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
   stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: "absolute",
+    flex: 1,
+    justifyContent: "space-evenly",
+    backgroundColor: "#fff",
   },
   register: {
     color: "blue",
     textAlign: "center",
+  },
+  links: {
+    flex: 2,
+    flexDirection: "row",
+    maxWidth: "100%",
+    justifyContent: "space-around",
+  },
+  button: {
+    padding: 10,
+    borderRadius: 5,
+    color: "#3D9D3D",
+    minWidth: 100,
+    textAlign: "center",
+    fontSize: 16,
+    fontWeight: "bold",
+    borderColor: "#3D9D3D",
+    borderWidth: 1,
+
+    maxHeight: 50,
   },
 });
