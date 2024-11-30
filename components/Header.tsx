@@ -55,6 +55,7 @@ const styles = StyleSheet.create({
     width: 70,
     height: 50,
     resizeMode: "contain",
+    marginLeft: 20,
   },
   placeholder: {
     width: 24, // Misma anchura que el icono para mantener la imagen centrada

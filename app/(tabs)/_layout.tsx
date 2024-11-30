@@ -16,7 +16,10 @@ export default function HomeLayout() {
           <Header navigation={navigation} canGoBack={false} />
         ),
         tabBarStyle: {
-          backgroundColor: Colors[colorScheme ?? "light"].background,
+          backgroundColor: "#fff",
+        },
+        tabBarLabelStyle: {
+          color: "black",
         },
       })}
     >
