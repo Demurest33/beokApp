@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Pressable,
   ScrollView,
+  Modal,
 } from "react-native";
 import { useLocalSearchParams, Link } from "expo-router";
 import { useEffect, useState } from "react";
@@ -28,6 +29,7 @@ export default function ProductComponent() {
   const [loading, setLoading] = useState(true);
   const [priceTotal, setPriceTotal] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     fetchProductOptions();
@@ -94,7 +96,9 @@ export default function ProductComponent() {
     };
 
     cartStore.addProduct(productWithOptions);
-    alert("Producto agregado al carrito"); //dar la opcion de ir al carrito o seguir comprando
+
+    //añadir modal de ir al carrito o seguir comprando
+    setShowModal(true);
   }
 
   function addQuantity() {
@@ -210,6 +214,30 @@ export default function ProductComponent() {
       >
         <Text style={{ fontSize: 16, color: "white" }}>Agregar uno mas</Text>
       </Pressable>
+
+      <Modal visible={showModal} animationType="fade" style={{}}>
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "white",
+            maxHeight: 200,
+            padding: 20,
+          }}
+        >
+          <Text>Producto agregado al carrito</Text>
+          <Link href="/(tabs)/" asChild>
+            <Text>Ir al carrito</Text>
+          </Link>
+          <Pressable
+            onPress={() => {
+              setShowModal(false);
+            }}
+          >
+            <Text>Seguir comprando</Text>
+          </Pressable>
+        </View>
+      </Modal>
 
       <Pressable
         onPress={() => {

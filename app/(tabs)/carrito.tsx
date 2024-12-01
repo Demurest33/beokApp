@@ -1,12 +1,11 @@
 import {
   StyleSheet,
-  Image,
   Pressable,
   View,
   Text,
   TextInput,
   Platform,
-  Button,
+  ScrollView,
 } from "react-native";
 import useCartStore from "@/store/cart";
 import { useState, useEffect } from "react";
@@ -21,6 +20,7 @@ import RadioForm, {
 import { paymentType } from "@/store/cart";
 import { Order, createOrder } from "@/services/orders";
 import useUserStore from "@/store/userStore";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Carrito() {
   const cartStore = useCartStore();
@@ -217,109 +217,241 @@ export default function Carrito() {
 
   if (products.length === 0) {
     return (
-      <View>
-        <Text>No hay productos en el carrito</Text>
+      <View style={styles.loginContainer}>
+        <Ionicons name="cart-sharp" size={80} color="gray" />
+        <Text style={styles.text}>Agrega productos a tu carrito</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.titleContainer}>
-      <Text>Total: ${total}</Text>
+    <ScrollView style={{ backgroundColor: "white" }}>
+      <View style={styles.header}>
+        <Text style={styles.headerText}>Carrito </Text>
+        <Ionicons name="cart-outline" style={styles.cartIcon} />
+        <Text
+          style={[styles.headerText, { marginLeft: 2, marginBottom: 2 }]}
+        >{`(${products.length})`}</Text>
+      </View>
 
-      <Pressable onPress={() => cartStore.clearCart()}>
-        <Text>Limpiar carrito</Text>
-      </Pressable>
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={{ display: "flex", flexDirection: "row" }}>
+          <Text style={styles.title}>Resumen del pedido</Text>
+          <Pressable
+            onPress={() => cartStore.clearCart()}
+            style={{
+              marginLeft: "auto",
+              padding: 5,
+              borderRadius: 5,
+            }}
+          >
+            <Ionicons name="trash" size={24} color="red" />
+          </Pressable>
+        </View>
 
-      {products.map((product) => (
-        <CartProduct
-          key={product.id + JSON.stringify(product.selectedOptions)}
-          {...product}
+        <View
+          style={{
+            borderBottomColor: "gray",
+            borderBottomWidth: 0.8,
+          }}
         />
-      ))}
 
-      <TextInput
-        style={{ height: 40, borderColor: "gray", borderWidth: 1 }}
-        placeholder="Instrucciones adicionales"
-        onChangeText={(text) => setMessage(text)}
-        multiline
-        numberOfLines={4}
-      />
-
-      {/* Hora y fecha de entrega */}
-
-      <Text>
-        Fecha seleccionada: {pickUpDate.toLocaleDateString()} -{" "}
-        {pickUpDate.toLocaleTimeString()}
-      </Text>
-
-      <Pressable onPress={() => setShow(true)}>
-        <Text>Seleccionar fecha</Text>
-      </Pressable>
-
-      <Pressable onPress={() => setShowTime(true)}>
-        <Text>Seleccionar hora</Text>
-      </Pressable>
-
-      {show && (
-        <DateTimePicker
-          value={pickUpDate}
-          mode="date"
-          display={Platform.OS === "ios" ? "spinner" : "default"}
-          onChange={onChange}
-        />
-      )}
-
-      {showTime && (
-        <DateTimePicker
-          value={pickUpDate}
-          mode="time"
-          display={Platform.OS === "ios" ? "spinner" : "default"}
-          onChange={onChange}
-        />
-      )}
-
-      <Text>Tipo de pago: {pago}</Text>
-      <RadioForm formHorizontal={true} animation={true}>
-        {radio_props.map((obj, i) => (
-          <RadioButton labelHorizontal={true} key={i}>
-            <RadioButtonInput
-              obj={obj}
-              index={i}
-              isSelected={pago === obj.value}
-              onPress={() => setPago(obj.value)}
-              buttonSize={16}
-              buttonOuterSize={24}
-              buttonInnerColor={"green"}
-              buttonOuterColor={pago === obj.value ? "green" : "gray"}
-            />
-            <RadioButtonLabel
-              obj={obj}
-              index={i}
-              labelStyle={{ fontSize: 16, marginRight: 8 }}
-              labelHorizontal={true}
-              onPress={() => setPago(obj.value)}
-            />
-          </RadioButton>
+        {products.map((product) => (
+          <CartProduct
+            key={product.id + JSON.stringify(product.selectedOptions)}
+            {...product}
+          />
         ))}
-      </RadioForm>
 
-      <Pressable onPress={handleOrder}>
-        <Text>Enviar orden</Text>
-      </Pressable>
-    </View>
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            paddingHorizontal: 8,
+          }}
+        >
+          <Text style={{ fontSize: 20, fontWeight: "bold", marginTop: 6 }}>
+            Total:
+          </Text>
+          <Text style={{ fontSize: 20, fontWeight: "bold", marginTop: 6 }}>
+            ${total}
+          </Text>
+        </View>
+
+        <TextInput
+          style={{
+            height: 40,
+            borderColor: "gray",
+            borderWidth: 1,
+            padding: 10,
+            borderRadius: 5,
+            marginVertical: 10,
+          }}
+          placeholder="Instrucciones adicionales"
+          onChangeText={(text) => setMessage(text)}
+          // multiline
+          // numberOfLines={4}
+        />
+
+        {/* Hora y fecha de entrega */}
+
+        <Text style={{ ...styles.title, marginBottom: 0 }}>
+          Fecha de entrega
+        </Text>
+        <Text style={{ color: "gray" }}>
+          La hora de entrega debe ser al menos 30 minutos después de la hora de
+          pedido.
+        </Text>
+
+        <View style={styles.dateInputs}>
+          <Pressable onPress={() => setShow(true)} style={styles.icon}>
+            <Ionicons name="calendar-outline" size={40} color="black" />
+            <Text style={{ marginLeft: 8 }}>
+              {pickUpDate.toLocaleDateString()}
+            </Text>
+          </Pressable>
+
+          <Pressable onPress={() => setShowTime(true)} style={styles.icon}>
+            <Ionicons name="time-outline" size={40} color="black" />
+            <Text style={{ marginLeft: 8 }}>
+              {pickUpDate.toLocaleTimeString()}
+            </Text>
+          </Pressable>
+        </View>
+
+        {show && (
+          <DateTimePicker
+            value={pickUpDate}
+            mode="date"
+            display={Platform.OS === "ios" ? "spinner" : "default"}
+            onChange={onChange}
+          />
+        )}
+
+        {showTime && (
+          <DateTimePicker
+            value={pickUpDate}
+            mode="time"
+            display={Platform.OS === "ios" ? "spinner" : "default"}
+            onChange={onChange}
+          />
+        )}
+
+        <Text style={{ ...styles.title, marginBottom: 0 }}>Tipo de pago</Text>
+        <Text style={{ color: "gray" }}>
+          Los días viernes y sábados no se aceptan transferencias.
+        </Text>
+
+        <RadioForm
+          formHorizontal={true}
+          animation={true}
+          style={{
+            marginTop: 8,
+            display: "flex",
+            flexDirection: "row",
+            flex: 1,
+            justifyContent: "space-evenly",
+          }}
+        >
+          {radio_props.map((obj, i) => (
+            <RadioButton labelHorizontal={true} key={i}>
+              <RadioButtonInput
+                obj={obj}
+                index={i}
+                isSelected={pago === obj.value}
+                onPress={() => setPago(obj.value)}
+                buttonSize={16}
+                buttonOuterSize={24}
+                buttonInnerColor={"green"}
+                buttonOuterColor={pago === obj.value ? "green" : "gray"}
+              />
+              <RadioButtonLabel
+                obj={obj}
+                index={i}
+                labelStyle={{ fontSize: 16, marginRight: 8 }}
+                labelHorizontal={true}
+                onPress={() => setPago(obj.value)}
+              />
+            </RadioButton>
+          ))}
+        </RadioForm>
+
+        <Pressable onPress={handleOrder} style={styles.button}>
+          <Text style={styles.buttonText}>Enviar orden</Text>
+        </Pressable>
+      </ScrollView>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: "#808080",
-    bottom: -90,
-    left: -35,
-    position: "absolute",
+  header: {
+    backgroundColor: "#3D9D3D",
+    display: "flex",
+    flexDirection: "row",
+    marginVertical: 10,
+    justifyContent: "center",
+    paddingVertical: 4,
+    alignItems: "center",
   },
-  titleContainer: {
+  headerText: {
+    color: "white",
+    fontSize: 24,
+  },
+  cartIcon: {
+    color: "white",
+    fontSize: 30,
+  },
+  container: {
+    marginHorizontal: 16,
+    padding: 16,
+    display: "flex",
     flexDirection: "column",
-    gap: 8,
+    justifyContent: "center",
+    borderRadius: 10,
+    borderColor: "gray",
+    borderWidth: 1,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  icon: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  dateInputs: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    marginVertical: 10,
+  },
+  loginContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
+  },
+  text: {
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    padding: 16,
+    maxWidth: 200,
+  },
+  button: {
+    backgroundColor: "#3D9D3D",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    marginTop: 20,
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });
