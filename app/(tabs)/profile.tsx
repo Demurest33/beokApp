@@ -7,12 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 import ProfileComponent from "@/components/Profile";
 
 export default function ProfileScreen() {
-  const [user, setUser] = useState<User | null>(null);
   const userStore = useUserStore();
-
-  useEffect(() => {
-    setUser(userStore.user ? userStore.user : null);
-  }, []);
 
   const goLogin = () => {
     router.replace("/login");
@@ -20,7 +15,7 @@ export default function ProfileScreen() {
 
   return (
     <View style={styles.stepContainer}>
-      {user ? (
+      {userStore.user ? (
         <ProfileComponent />
       ) : (
         <Pressable style={styles.loginContainer} onPress={goLogin}>

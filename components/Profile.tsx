@@ -59,7 +59,7 @@ export default function ProfileComponent() {
         />
       </View>
 
-      <Link href={"/(tabs)/"} style={styles.button}>
+      <Link href={"/login"} style={styles.button}>
         <Ionicons name="log-out-outline" size={20} color="#fff" />
         <Text style={styles.butonLabel}> Cerrar sesión</Text>
       </Link>
