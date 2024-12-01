@@ -87,12 +87,14 @@ export default function RegisterScreen() {
       <TextInput
         style={[styles.input]}
         placeholder="Contraseña"
+        secureTextEntry={true}
         onChangeText={setPassword}
       />
 
       <TextInput
         style={[styles.input]}
         placeholder="Confirmar contraseña"
+        secureTextEntry={true}
         onChangeText={setConfirmPassword}
       />
 
