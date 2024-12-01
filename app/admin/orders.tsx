@@ -1,12 +1,23 @@
-import { View, Text, StyleSheet, FlatList, RefreshControl } from "react-native";
-import { getOrders, orderResponse } from "@/services/orders";
+import {
+  StyleSheet,
+  ActivityIndicator,
+  View,
+  Text,
+  FlatList,
+  RefreshControl,
+  Pressable,
+  ScrollView,
+} from "react-native";
+import { getOrders } from "@/services/orders";
 import { useEffect, useState } from "react";
 import useUserStore from "@/store/userStore";
-import PedidoComponent from "@/components/admin/PedidosAdmin";
+import PedidoComponent from "@/components/Pedido";
+import { orderResponse } from "@/services/orders";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 
 export default function OrdersScreen() {
   const userStore = useUserStore();
-
   const [orders, setOrders] = useState<orderResponse[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -22,6 +33,8 @@ export default function OrdersScreen() {
         if (orders) {
           setOrders(orders);
         }
+
+        console.log(orders.length);
       } catch (error) {
         console.error("Error al obtener los pedidos:", error);
         alert("Error al obtener los pedidos");
@@ -31,32 +44,82 @@ export default function OrdersScreen() {
     }
   }
 
+  if (loading) {
+    return (
+      <View>
+        <ActivityIndicator size="large" color="#000" />
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.stepContainer}>
-      {loading ? (
-        <Text>Cargando...</Text>
-      ) : (
-        <FlatList
-          data={orders}
-          keyExtractor={(order) => order.id.toString()}
-          renderItem={({ item }) => <PedidoComponent {...item} />}
+    <>
+      {!(orders.length > 0) ? (
+        <ScrollView
+          contentContainerStyle={styles.container}
           refreshControl={
             <RefreshControl refreshing={loading} onRefresh={fetchOrders} />
           }
-        />
+        >
+          <Pressable style={styles.loginContainer}>
+            <Ionicons name="document-text" size={80} color="gray" />
+            <Text style={styles.text}>No hay pedidos</Text>
+          </Pressable>
+        </ScrollView>
+      ) : (
+        <>
+          <FlatList
+            refreshControl={
+              <RefreshControl
+                refreshing={false}
+                onRefresh={fetchOrders}
+                colors={["#000"]}
+              />
+            }
+            data={orders}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <PedidoComponent
+                pedido={item}
+                {...item}
+                fetchOrders={fetchOrders}
+              />
+            )}
+          />
+        </>
       )}
-    </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: "row",
+  loginContainer: {
+    flex: 1,
+    justifyContent: "center",
     alignItems: "center",
-    gap: 8,
+    backgroundColor: "white",
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  text: {
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+    padding: 16,
+    maxWidth: 200,
+  },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    backgroundColor: "white",
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10,
+    backgroundColor: "white",
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
   },
 });
