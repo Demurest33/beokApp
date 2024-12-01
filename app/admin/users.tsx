@@ -1,4 +1,12 @@
-import { View, Text, StyleSheet, FlatList, RefreshControl } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  RefreshControl,
+  TextInput,
+  Button,
+} from "react-native";
 import UserCard from "@/components/admin/UserCard";
 import { User as UserType } from "@/types/User";
 import { useEffect, useState } from "react";
@@ -7,6 +15,7 @@ import { getAllUsers } from "@/services/users";
 export default function UsersScreen() {
   const [users, setUsers] = useState<UserType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchedUser, setSearchedUser] = useState<UserType | null>(null);
 
   useEffect(() => {
     fetchUsers();
@@ -22,19 +31,44 @@ export default function UsersScreen() {
     }
   }
 
+  function searchUser(phone: string) {
+    const searchedUser = users.find((user) => user.phone === phone);
+
+    if (searchedUser) {
+      setSearchedUser(searchedUser);
+    }
+  }
+
   return (
     <View style={styles.stepContainer}>
       {loading ? (
         <Text>Cargando...</Text>
       ) : (
-        <FlatList
-          data={users}
-          keyExtractor={(user) => user.id}
-          renderItem={({ item }) => <UserCard {...item} />}
-          refreshControl={
-            <RefreshControl refreshing={loading} onRefresh={fetchUsers} />
-          }
-        />
+        <>
+          <TextInput
+            style={styles.input}
+            onChange={(event) => {
+              if (event.nativeEvent.text === "") {
+                setSearchedUser(null);
+              }
+            }}
+            placeholder="Buscar por número de teléfono"
+            onEndEditing={(event) => {
+              searchUser(event.nativeEvent.text);
+            }}
+          />
+
+          <FlatList
+            data={searchedUser ? [searchedUser] : users}
+            keyExtractor={(user) => user.id}
+            renderItem={({ item }) => (
+              <UserCard user={item} fetchUsers={fetchUsers} />
+            )}
+            refreshControl={
+              <RefreshControl refreshing={loading} onRefresh={fetchUsers} />
+            }
+          />
+        </>
       )}
     </View>
   );
@@ -48,6 +82,14 @@ const styles = StyleSheet.create({
   },
   stepContainer: {
     gap: 8,
+    marginBottom: 8,
+    padding: 8,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "gray",
+    borderRadius: 8,
+    padding: 8,
     marginBottom: 8,
   },
 });
