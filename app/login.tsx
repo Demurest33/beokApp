@@ -26,7 +26,7 @@ export default function HomeScreen() {
           <Text> Registro</Text>
         </Link>
 
-        <Link href={"/(tabs)/"} style={styles.button}>
+        <Link href={"/(tabs)/"} replace style={styles.button}>
           <Ionicons
             name="fast-food-outline"
             size={20}

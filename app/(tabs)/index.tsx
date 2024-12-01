@@ -25,7 +25,7 @@ export default function HomeScreen() {
   useEffect(() => {
     getUserData();
     fetchMenu();
-  }, []);
+  }, [userStore.user]);
 
   async function fetchMenu() {
     try {
