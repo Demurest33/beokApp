@@ -71,6 +71,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
+    alignItems: "center",
   },
   banner: {
     width: "100%",
@@ -82,8 +83,8 @@ const styles = StyleSheet.create({
   input: {
     borderColor: "gray",
     borderWidth: 1,
-    width: "100%",
-    maxWidth: 200,
+    // width: "100%",
+    // maxWidth: 300,
     borderRadius: 5,
     textAlign: "center",
     padding: 10,
@@ -93,9 +94,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   label: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: "bold",
     color: "#595757",
+    textAlign: "center",
+    marginBottom: 5,
   },
   button: {
     padding: 10,
