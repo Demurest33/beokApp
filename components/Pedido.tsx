@@ -8,11 +8,20 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { orderResponse, toogleFavOrder } from "@/services/orders";
+import {
+  orderResponse,
+  toogleFavOrder,
+  statusColors,
+  reOrder,
+} from "@/services/orders";
 import { useState } from "react";
-import { reOrder } from "@/services/orders";
 
-export default function PedidoComponent(pedido: orderResponse) {
+interface props {
+  pedido: orderResponse;
+  fetchOrders: () => any;
+}
+
+export default function PedidoComponent({ pedido, fetchOrders }: props) {
   const [loading, setLoading] = useState(false);
   const [isfav, setIsFav] = useState(pedido.is_fav);
   const handlePressProduct = () => {
@@ -31,13 +40,6 @@ export default function PedidoComponent(pedido: orderResponse) {
     });
   };
 
-  const statusColors = {
-    preparando: "#FFA500", // Naranja
-    listo: "#32CD32", // Verde
-    entregado: "#1E90FF", // Azul
-    cancelado: "#FF4500", // Rojo
-  };
-
   const toogleFav = async () => {
     if (loading) {
       return;
@@ -47,6 +49,7 @@ export default function PedidoComponent(pedido: orderResponse) {
       setLoading(true);
       await toogleFavOrder(pedido.id);
       setIsFav((prev) => !prev);
+      await fetchOrders();
     } catch (error) {
       alert("Error al marcar como favorito");
       console.log(error);
@@ -184,7 +187,7 @@ const styles = StyleSheet.create({
   },
   status: {
     fontSize: 14,
-    fontWeight: "600",
+    fontWeight: "bold",
     marginBottom: 8,
   },
   details: {
@@ -199,7 +202,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   detailButton: {
-    backgroundColor: "#1E90FF",
+    backgroundColor: "#3D9D3D",
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 6,

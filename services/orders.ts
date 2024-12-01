@@ -3,6 +3,13 @@ import { AxiosError } from "axios";
 import { productWithOptions } from "@/types/Menu";
 import { paymentType } from "@/store/cart";
 
+export const statusColors = {
+  preparando: "#E0B116", // Naranja
+  listo: "#32CD32", // Verde
+  entregado: "#1E90FF", // Azul
+  cancelado: "#FF4500", // Rojo
+};
+
 export interface Order {
   products: productWithOptions[];
   pick_up_date: string;

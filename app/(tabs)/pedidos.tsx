@@ -5,8 +5,8 @@ import {
   Text,
   FlatList,
   RefreshControl,
-  Switch,
   Pressable,
+  ScrollView,
 } from "react-native";
 import { getOrders } from "@/services/orders";
 import { useEffect, useState } from "react";
@@ -55,6 +55,10 @@ export default function TabTwoScreen() {
     }
   }
 
+  const toogleshowFavourites = () => {
+    setShowFavourites(!showFavourites);
+  };
+
   if (userStore.user === null) {
     return (
       <Pressable style={styles.loginContainer} onPress={goLogin}>
@@ -75,10 +79,21 @@ export default function TabTwoScreen() {
   if (showFavourites) {
     return (
       <>
-        <Switch
-          value={showFavourites}
-          onValueChange={(value) => setShowFavourites(value)}
-        />
+        {/* Alinear estrella a la derecha */}
+
+        <Pressable onPress={toogleshowFavourites} style={styles.header}>
+          {showFavourites ? (
+            <Text style={{ fontSize: 16, marginRight: 5 }}>Ver todos</Text>
+          ) : (
+            <Text style={{ fontSize: 16, marginRight: 5 }}>Ver favoritos</Text>
+          )}
+
+          <Ionicons
+            name={showFavourites ? "star-sharp" : "star-outline"}
+            size={32}
+            color="#E0B116"
+          />
+        </Pressable>
 
         <FlatList
           refreshControl={
@@ -90,7 +105,13 @@ export default function TabTwoScreen() {
           }
           data={favourites}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <PedidoComponent {...item} />}
+          renderItem={({ item }) => (
+            <PedidoComponent
+              pedido={item}
+              {...item}
+              fetchOrders={fetchOrders}
+            />
+          )}
         />
       </>
     );
@@ -98,17 +119,36 @@ export default function TabTwoScreen() {
 
   return (
     <>
-      {orders ? (
-        <Pressable style={styles.loginContainer}>
-          <Ionicons name="document-text" size={80} color="gray" />
-          <Text style={styles.text}>Aun no haces pedidos</Text>
-        </Pressable>
+      {!(orders.length > 0) ? (
+        <ScrollView
+          contentContainerStyle={styles.container} // Para centrar el contenido
+          refreshControl={
+            <RefreshControl refreshing={loading} onRefresh={fetchOrders} />
+          }
+        >
+          <Pressable style={styles.loginContainer}>
+            <Ionicons name="document-text" size={80} color="gray" />
+            <Text style={styles.text}>Aún no haces pedidos</Text>
+          </Pressable>
+        </ScrollView>
       ) : (
         <>
-          <Switch
-            value={showFavourites}
-            onValueChange={(value) => setShowFavourites(value)}
-          />
+          <Pressable onPress={toogleshowFavourites} style={styles.header}>
+            {showFavourites ? (
+              <Text style={{ fontSize: 16, marginRight: 5 }}>Ver todos</Text>
+            ) : (
+              <Text style={{ fontSize: 16, marginRight: 5 }}>
+                Ver favoritos
+              </Text>
+            )}
+
+            <Ionicons
+              name={showFavourites ? "star-sharp" : "star-outline"}
+              size={32}
+              color="#E0B116"
+            />
+          </Pressable>
+
           <FlatList
             refreshControl={
               <RefreshControl
@@ -119,7 +159,13 @@ export default function TabTwoScreen() {
             }
             data={orders}
             keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => <PedidoComponent {...item} />}
+            renderItem={({ item }) => (
+              <PedidoComponent
+                pedido={item}
+                {...item}
+                fetchOrders={fetchOrders}
+              />
+            )}
           />
         </>
       )}
@@ -140,5 +186,21 @@ const styles = StyleSheet.create({
     textAlign: "center",
     padding: 16,
     maxWidth: 200,
+  },
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    backgroundColor: "white",
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10,
+    backgroundColor: "white",
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
   },
 });

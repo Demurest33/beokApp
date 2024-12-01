@@ -6,6 +6,7 @@ import {
   Pressable,
   ScrollView,
   Modal,
+  TouchableOpacity,
 } from "react-native";
 import { useLocalSearchParams, Link } from "expo-router";
 import { useEffect, useState } from "react";
@@ -15,9 +16,10 @@ import RadioForm, {
   RadioButton,
   RadioButtonInput,
   RadioButtonLabel,
-  RadioButtonProps,
 } from "react-native-simple-radio-button";
 import useCartStore from "@/store/cart";
+import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 
 export default function ProductComponent() {
   const cartStore = useCartStore();
@@ -130,122 +132,149 @@ export default function ProductComponent() {
 
   return (
     <ScrollView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.headerText}>{name}</Text>
+      </View>
+
       <Image source={{ uri: image_url as string }} style={styles.image} />
-      <Text style={styles.productName}>{name}</Text>
-      <Text style={styles.description}>{description}</Text>
-      <Text style={styles.price}>${priceTotal}</Text>
 
-      {/* make radio buttons */}
-
-      {loading && <Text>Cargando opciones...</Text>}
-
-      {options.map((option) => (
-        <View key={option.id}>
-          <Text style={styles.optionName}>{option.name}</Text>
-
-          <RadioForm
-            formHorizontal={option.values.length < 4}
-            animation
-            style={styles.radiobuttonform}
-            // radio_props={ => ({
-            //   label: value,
-            //   value: value,
-            // }))}
-            accessibilityLabel="radio"
-            initial={0}
-            // onPress={(value) => {
-            //   // console.log(option.prices?.[option.values.indexOf(value)] || 0);
-            //   setSelectedOptions({
-            //     ...selectedOptions,
-            //     [option.name]: value,
-            //   });
-            // }}
-          >
-            {option.values.map((value) => (
-              <RadioButton labelHorizontal key={value}>
-                <RadioButtonInput
-                  buttonInnerColor="green"
-                  buttonOuterColor="green"
-                  obj={{ label: value, value: value }}
-                  index={option.values.indexOf(value)}
-                  isSelected={selectedOptions[option.name] === value}
-                  buttonSize={16}
-                  buttonWrapStyle={{ marginRight: 6 }}
-                  onPress={(value) => {
-                    // console.log(option.prices?.[option.values.indexOf(value)] || 0);
-                    setSelectedOptions({
-                      ...selectedOptions,
-                      [option.name]: value,
-                    });
-                  }}
-                />
-                <RadioButtonLabel
-                  obj={{ label: value, value: value }}
-                  index={option.values.indexOf(value)}
-                  onPress={(value) => {
-                    // console.log(option.prices?.[option.values.indexOf(value)] || 0);
-                    setSelectedOptions({
-                      ...selectedOptions,
-                      [option.name]: value,
-                    });
-                  }}
-                />
-              </RadioButton>
-            ))}
-          </RadioForm>
-        </View>
-      ))}
-
-      {/* cambiar cantidad del producto */}
-
-      <Text>Cantidad: {quantity}</Text>
-      <Pressable
-        style={{ marginBottom: 10, backgroundColor: "red", padding: 10 }}
-        onPress={() => {
-          if (quantity > 1) substractQuantity();
-        }}
-      >
-        <Text style={{ fontSize: 16, color: "white" }}>Restar uno mas</Text>
-      </Pressable>
-
-      <Pressable
-        style={{ marginBottom: 10, backgroundColor: "blue", padding: 10 }}
-        onPress={() => addQuantity()}
-      >
-        <Text style={{ fontSize: 16, color: "white" }}>Agregar uno mas</Text>
-      </Pressable>
-
-      <Modal visible={showModal} animationType="fade" style={{}}>
+      <View style={{ padding: 10, marginTop: 10 }}>
         <View
           style={{
-            justifyContent: "center",
+            flexDirection: "row",
+            justifyContent: "space-between",
             alignItems: "center",
-            backgroundColor: "white",
-            maxHeight: 200,
-            padding: 20,
           }}
         >
-          <Text>Producto agregado al carrito</Text>
-          <Link href="/(tabs)/" asChild>
-            <Text>Ir al carrito</Text>
-          </Link>
-          <Pressable
-            onPress={() => {
-              setShowModal(false);
-            }}
-          >
-            <Text>Seguir comprando</Text>
-          </Pressable>
-        </View>
-      </Modal>
+          <Text style={styles.price}>${priceTotal}</Text>
 
-      <Pressable
-        onPress={() => {
-          getProductAndAttachoptions();
-        }}
-      >
-        <Text>Añadir al carrito</Text>
-      </Pressable>
+          <View style={styles.actions}>
+            <Text style={{ fontSize: 20, fontWeight: "500", marginRight: 8 }}>
+              Cantidad: {quantity}
+            </Text>
+
+            <Pressable
+              onPress={() => addQuantity()}
+              style={{ ...styles.outlineButon, borderColor: "green" }}
+            >
+              <Ionicons name="add" size={18} color="green" />
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                if (quantity > 1) substractQuantity();
+              }}
+              style={{ ...styles.outlineButon, borderColor: "red" }}
+            >
+              <Ionicons name="remove" size={18} color="red" />
+            </Pressable>
+          </View>
+        </View>
+
+        <Text style={styles.description}>{description}</Text>
+
+        {/* make radio buttons */}
+
+        {loading && <Text>Cargando opciones...</Text>}
+
+        {options.map((option) => (
+          <View key={option.id}>
+            <Text style={styles.optionName}>{option.name}</Text>
+
+            <RadioForm
+              formHorizontal={option.values.length < 4}
+              animation
+              style={styles.radiobuttonform}
+              // radio_props={ => ({
+              //   label: value,
+              //   value: value,
+              // }))}
+              accessibilityLabel="radio"
+              initial={0}
+              // onPress={(value) => {
+              //   // console.log(option.prices?.[option.values.indexOf(value)] || 0);
+              //   setSelectedOptions({
+              //     ...selectedOptions,
+              //     [option.name]: value,
+              //   });
+              // }}
+            >
+              {option.values.map((value) => (
+                <RadioButton labelHorizontal key={value}>
+                  <RadioButtonInput
+                    buttonInnerColor="green"
+                    buttonOuterColor="green"
+                    obj={{ label: value, value: value }}
+                    index={option.values.indexOf(value)}
+                    isSelected={selectedOptions[option.name] === value}
+                    buttonSize={16}
+                    buttonWrapStyle={{ marginRight: 6 }}
+                    onPress={(value) => {
+                      // console.log(option.prices?.[option.values.indexOf(value)] || 0);
+                      setSelectedOptions({
+                        ...selectedOptions,
+                        [option.name]: value,
+                      });
+                    }}
+                  />
+                  <RadioButtonLabel
+                    obj={{ label: value, value: value }}
+                    index={option.values.indexOf(value)}
+                    labelStyle={{ fontSize: 16 }}
+                    onPress={(value) => {
+                      // console.log(option.prices?.[option.values.indexOf(value)] || 0);
+                      setSelectedOptions({
+                        ...selectedOptions,
+                        [option.name]: value,
+                      });
+                    }}
+                  />
+                </RadioButton>
+              ))}
+            </RadioForm>
+          </View>
+        ))}
+
+        <Modal
+          visible={showModal}
+          animationType="fade"
+          transparent={true}
+          onRequestClose={() => setShowModal(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              {/* Mensaje */}
+              <Text style={styles.modalMessage}>
+                ¿Estás seguro de realizar esta acción?
+              </Text>
+
+              {/* Botones */}
+              <View style={styles.buttonContainer}>
+                <Pressable
+                  style={[styles.button, { backgroundColor: "gray" }]}
+                  onPress={() => {
+                    setShowModal(false), router.replace("/(tabs)/");
+                  }}
+                >
+                  <Text style={styles.buttonText}>Seguir comprando</Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.button, { backgroundColor: "green" }]}
+                  onPress={() => {
+                    setShowModal(false);
+                    router.replace("/(tabs)/carrito");
+                  }}
+                >
+                  <Text style={styles.buttonText}>Ir al carrito</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        <Pressable onPress={getProductAndAttachoptions} style={styles.button}>
+          <Text style={styles.buttonText}>Agregar al carrito</Text>
+        </Pressable>
+      </View>
     </ScrollView>
   );
 }
@@ -253,7 +282,7 @@ export default function ProductComponent() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
+    backgroundColor: "#fff",
   },
   category: {
     marginBottom: 20,
@@ -273,26 +302,25 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     resizeMode: "contain",
   },
-  productName: {
-    fontSize: 24,
-    fontWeight: "bold",
-  },
   description: {
     fontSize: 18,
     color: "gray",
-    marginTop: 5,
+    marginVertical: 5,
   },
   price: {
-    fontSize: 18,
-    color: "green",
-    marginTop: 5,
+    fontSize: 24,
+    fontWeight: "bold",
+    textDecorationStyle: "solid",
+    textDecorationLine: "underline",
   },
   option: {
     marginTop: 10,
   },
   optionName: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
+    marginTop: 10,
+    marginBottom: 5,
   },
   optionValue: {
     fontSize: 16,
@@ -309,5 +337,75 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     gap: 10,
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 10,
+    backgroundColor: "#D4D4D4",
+    borderBottomWidth: 3,
+    borderBottomColor: "#ccc",
+
+    elevation: 10,
+    marginVertical: 10,
+  },
+  headerText: {
+    color: "black",
+    fontSize: 24,
+    fontWeight: "600",
+  },
+  headerIcon: {
+    color: "white",
+    fontSize: 30,
+  },
+  outlineButon: {
+    padding: 8,
+    borderWidth: 1,
+    borderRadius: 5,
+    borderColor: "black",
+    marginRight: 8,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+  },
+  button: {
+    backgroundColor: "#3D9D3D",
+    padding: 10,
+    borderRadius: 5,
+    alignItems: "center",
+    marginTop: 20,
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  actions: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContainer: {
+    width: "80%",
+    padding: 20,
+    backgroundColor: "white",
+    borderRadius: 10,
+    elevation: 10,
+  },
+  modalMessage: {
+    fontSize: 20,
+    marginBottom: 20,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
 });
