@@ -25,7 +25,7 @@ export default function TabTwoScreen() {
 
   useEffect(() => {
     fetchOrders();
-  }, [userStore.user]);
+  }, []);
 
   useEffect(() => {
     if (orders.length > 0) {

@@ -25,10 +25,11 @@ export default function HomeScreen() {
   useEffect(() => {
     getUserData();
     fetchMenu();
-  }, [userStore.user]);
+  }, []);
 
   async function fetchMenu() {
     try {
+      setLoading(true);
       const menu: Menu = await getMenu();
       setMenu(menu);
     } catch (error) {
