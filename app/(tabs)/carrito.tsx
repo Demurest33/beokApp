@@ -107,9 +107,13 @@ export default function Carrito() {
       return;
     }
 
-    //si el usuario no tiene sesion iniciad no puede hacer un pedido
     if (!userStore.user) {
       alert("Debes iniciar sesión para realizar un pedido.");
+      return;
+    }
+
+    if (!userStore.user.verified_at) {
+      alert("Debes verificar tu número antes de realizar un pedido.");
       return;
     }
 
