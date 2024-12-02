@@ -8,12 +8,20 @@ import {
   Pressable,
   ScrollView,
   TextInput,
+  Modal,
+  TouchableWithoutFeedback,
 } from "react-native";
-import { getOrders } from "@/services/orders";
+import {} from "@/services/orders";
 import { useEffect, useState } from "react";
 import useUserStore from "@/store/userStore";
 import PedidoComponent from "@/components/admin/PedidosAdmin";
-import { adminOrderResponse } from "@/services/orders";
+import {
+  getOrders,
+  adminOrderResponse,
+  OrderStatus,
+  statusColors,
+  updateOrderStatus,
+} from "@/services/orders";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function OrdersScreen() {
@@ -21,6 +29,10 @@ export default function OrdersScreen() {
   const [orders, setOrders] = useState<adminOrderResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchedUser, setSearchedUser] = useState<string | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [filteredOrders, setFilteredOrders] = useState<adminOrderResponse[]>(
+    []
+  );
 
   useEffect(() => {
     fetchOrders();
@@ -51,6 +63,45 @@ export default function OrdersScreen() {
     );
   }
 
+  const pickeroptions = [
+    {
+      label: "Todos",
+      value: "todos",
+      color: "blue",
+    },
+    {
+      label: "Preparando",
+      value: OrderStatus.preparando,
+      color: statusColors[OrderStatus.preparando],
+    },
+    {
+      label: "Listo",
+      value: OrderStatus.listo,
+      color: statusColors[OrderStatus.listo],
+    },
+    {
+      label: "Entregado",
+      value: OrderStatus.entregado,
+      color: statusColors[OrderStatus.entregado],
+    },
+    {
+      label: "Cancelado",
+      value: OrderStatus.cancelado,
+      color: statusColors[OrderStatus.cancelado],
+    },
+  ];
+
+  const handleFilterStatus = async (status: OrderStatus | string) => {
+    if (status === "todos") {
+      setModalVisible(false);
+      setFilteredOrders([]);
+    }
+
+    const filtered = orders.filter((order) => order.status === status);
+    setFilteredOrders(filtered);
+    setModalVisible(false);
+  };
+
   return (
     <>
       {!(orders.length > 0) ? (
@@ -67,19 +118,24 @@ export default function OrdersScreen() {
         </ScrollView>
       ) : (
         <View style={styles.container2}>
-          <TextInput
-            keyboardType="phone-pad"
-            style={styles.input}
-            onChange={(event) => {
-              if (event.nativeEvent.text === "") {
-                setSearchedUser(null);
-              }
-            }}
-            placeholder="Buscar por número de teléfono"
-            onEndEditing={(event) => {
-              setSearchedUser(event.nativeEvent.text);
-            }}
-          />
+          <View style={styles.topInputs}>
+            <Pressable onPress={() => setModalVisible(true)}>
+              <Ionicons name="search" size={24} color="black" />
+            </Pressable>
+            <TextInput
+              keyboardType="phone-pad"
+              style={styles.input}
+              onChange={(event) => {
+                if (event.nativeEvent.text === "") {
+                  setSearchedUser(null);
+                }
+              }}
+              placeholder="Buscar por número de teléfono"
+              onEndEditing={(event) => {
+                setSearchedUser(event.nativeEvent.text);
+              }}
+            />
+          </View>
 
           <FlatList
             ListEmptyComponent={
@@ -96,8 +152,16 @@ export default function OrdersScreen() {
               />
             }
             data={
-              searchedUser
-                ? orders.filter((order) => order.user.phone === searchedUser)
+              filteredOrders.length > 0
+                ? searchedUser
+                  ? filteredOrders.filter((order) =>
+                      order.user.phone.includes(searchedUser)
+                    )
+                  : filteredOrders
+                : searchedUser
+                ? orders.filter((order) =>
+                    order.user.phone.includes(searchedUser)
+                  )
                 : orders
             }
             keyExtractor={(item) => item.id.toString()}
@@ -111,6 +175,37 @@ export default function OrdersScreen() {
           />
         </View>
       )}
+
+      <Modal visible={modalVisible} animationType="fade" transparent={true}>
+        <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+          <Pressable
+            style={styles.modalBackground}
+            onPress={() => setModalVisible(false)}
+          >
+            <TouchableWithoutFeedback>
+              <View style={styles.modalContainer}>
+                {/* <Text style={styles.modalTitle}>
+                  Selecciona el nuevo estado
+                </Text> */}
+                <FlatList
+                  style={{ width: "100%" }}
+                  data={pickeroptions}
+                  keyExtractor={(item) => item.value}
+                  renderItem={({ item }) => (
+                    <Pressable onPress={() => handleFilterStatus(item.value)}>
+                      <View
+                        style={[styles.option, { borderLeftColor: item.color }]}
+                      >
+                        <Text style={styles.optionText}>{item.label}</Text>
+                      </View>
+                    </Pressable>
+                  )}
+                />
+              </View>
+            </TouchableWithoutFeedback>
+          </Pressable>
+        </TouchableWithoutFeedback>
+      </Modal>
     </>
   );
 }
@@ -145,7 +240,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 8,
     marginVertical: 8,
-    marginHorizontal: 16,
+    flex: 1,
   },
   empty: {
     flex: 1,
@@ -156,5 +251,52 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     backgroundColor: "white",
+  },
+  topInputs: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 10,
+    paddingHorizontal: 16,
+    backgroundColor: "white",
+    margin: "auto",
+    gap: 10,
+  },
+  modalBackground: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContainer: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    width: "80%",
+    alignItems: "center",
+  },
+  modalTitle: {
+    fontSize: 18,
+    marginBottom: 15,
+    fontWeight: "bold",
+  },
+  option: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    width: "100%",
+    borderLeftWidth: 5,
+    marginBottom: 10,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderTopColor: "#ccc",
+    borderRightColor: "#ccc",
+    borderBottomColor: "#ccc",
+  },
+  optionText: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
   },
 });
