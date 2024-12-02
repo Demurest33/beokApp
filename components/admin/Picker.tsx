@@ -8,6 +8,7 @@ import {
   Alert,
   TouchableWithoutFeedback,
   Pressable,
+  TextInput,
 } from "react-native";
 import {
   OrderStatus,
@@ -17,8 +18,9 @@ import {
 import { router } from "expo-router";
 
 export default function MyPicker({ orderID }: { orderID: number }) {
-  const [status, setStatus] = useState<string>("Preparando");
   const [modalVisible, setModalVisible] = useState(false);
+  const [cancelationModalVisible, setCancelationModalVisible] = useState(false);
+  const [cancelationReason, setCancelationReason] = useState<string>("");
 
   const pickeroptions = [
     {
@@ -43,10 +45,33 @@ export default function MyPicker({ orderID }: { orderID: number }) {
     },
   ];
 
+  const cancelOrder = async () => {
+    try {
+      await updateOrderStatus(
+        orderID,
+        OrderStatus.cancelado,
+        cancelationReason
+      );
+      setModalVisible(false);
+      Alert.alert("Éxito", "Pedido cancelado correctamente");
+      router.replace("/admin/orders");
+    } catch (error) {
+      Alert.alert("Error", "No se pudo cancelar el pedido");
+    } finally {
+      setCancelationModalVisible(false);
+      setCancelationReason("");
+    }
+  };
+
   const handleStatusChange = async (itemValue: OrderStatus) => {
+    if (itemValue === OrderStatus.cancelado) {
+      setCancelationModalVisible(true);
+      setModalVisible(false);
+      return;
+    }
+
     try {
       await updateOrderStatus(orderID, itemValue);
-      setStatus(itemValue);
       setModalVisible(false);
 
       Alert.alert("Éxito", "Estado del pedido actualizado correctamente");
@@ -91,6 +116,67 @@ export default function MyPicker({ orderID }: { orderID: number }) {
                     </Pressable>
                   )}
                 />
+              </View>
+            </TouchableWithoutFeedback>
+          </Pressable>
+        </TouchableWithoutFeedback>
+      </Modal>
+
+      {/* Modal del mensaje de cancelación */}
+      <Modal
+        visible={cancelationModalVisible}
+        animationType="fade"
+        transparent={true}
+      >
+        <TouchableWithoutFeedback
+          onPress={() => setCancelationModalVisible(false)}
+        >
+          <Pressable
+            style={styles.modalBackground}
+            onPress={() => setCancelationModalVisible(false)}
+          >
+            <TouchableWithoutFeedback>
+              <View style={styles.modalContainer}>
+                <Text style={styles.modalTitle}>Motivo de cancelación</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Escribe el motivo de la cancelación"
+                  onChangeText={setCancelationReason}
+                />
+
+                <View
+                  style={{
+                    flexDirection: "row",
+                  }}
+                >
+                  <Pressable
+                    style={[
+                      styles.button,
+                      {
+                        marginRight: 10,
+                        backgroundColor: "gray",
+                        flex: 1,
+                        maxWidth: 100,
+                      },
+                    ]}
+                    onPress={() => setCancelationModalVisible(false)}
+                  >
+                    <Text style={styles.btnText}>Salir</Text>
+                  </Pressable>
+
+                  <Pressable
+                    style={[
+                      styles.button,
+                      { backgroundColor: "#D32F2F", flex: 1, maxWidth: 100 },
+                    ]}
+                    onPress={() => {
+                      cancelOrder();
+                      setCancelationModalVisible(false);
+                    }}
+                  >
+                    <Text style={styles.btnText}>Enviar</Text>
+                  </Pressable>
+                </View>
               </View>
             </TouchableWithoutFeedback>
           </Pressable>
@@ -163,5 +249,16 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     fontSize: 18,
+    textAlign: "center",
+  },
+  input: {
+    width: "100%",
+    maxWidth: 300,
+    flexGrow: 1,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    marginBottom: 10,
   },
 });

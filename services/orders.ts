@@ -166,10 +166,15 @@ export async function decodeQr(hash: string) {
   }
 }
 
-export async function updateOrderStatus(orderId: number, status: OrderStatus) {
+export async function updateOrderStatus(
+  orderId: number,
+  status: OrderStatus,
+  message?: string
+) {
   try {
     const response = await api.patch(`/orders/${orderId}/status`, {
       status,
+      message,
     });
 
     return response.data;

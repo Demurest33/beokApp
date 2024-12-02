@@ -9,7 +9,12 @@ import {
   ScrollView,
 } from "react-native";
 import { useLocalSearchParams, Link } from "expo-router";
-import { getOrderDetails, order_product, OrderStatus } from "@/services/orders";
+import {
+  getOrderDetails,
+  order_product,
+  OrderStatus,
+  statusColors,
+} from "@/services/orders";
 import { useEffect, useState } from "react";
 import useUserStore from "@/store/userStore";
 import QrCode from "@/components/QrCode";
@@ -60,7 +65,7 @@ export default function OrderDetails() {
     [OrderStatus.preparando]: "Preparando pedido",
     [OrderStatus.listo]: "Pedido listo",
     [OrderStatus.entregado]: "Pedido entregado",
-    [OrderStatus.cancelado]: "Pedico cancelado",
+    [OrderStatus.cancelado]: "Pedido cancelado",
   };
 
   if (loading) {
@@ -84,7 +89,15 @@ export default function OrderDetails() {
         style={styles.body}
         ListHeaderComponent={
           <>
-            <Text style={[styles.status, styles.title]}>
+            <Text
+              style={[
+                styles.status,
+                styles.title,
+                {
+                  color: statusColors[status as OrderStatus],
+                },
+              ]}
+            >
               {translatedStatus[status as OrderStatus]}
             </Text>
 
