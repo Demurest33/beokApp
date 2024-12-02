@@ -159,13 +159,13 @@ export default function OrderDetails() {
             </View>
 
             <Text
-              style={{ textAlign: "center", marginVertical: 10, fontSize: 16 }}
+              style={{ textAlign: "center", marginVertical: 10, fontSize: 14 }}
             >
               Pedido realizado:{" "}
               {new Date(created_at.toString()).toLocaleString()}
             </Text>
             <Text
-              style={{ textAlign: "center", marginVertical: 10, fontSize: 16 }}
+              style={{ textAlign: "center", marginVertical: 10, fontSize: 14 }}
             >
               {status === OrderStatus.cancelado
                 ? "Pedido cancelado: "

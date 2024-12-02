@@ -4,15 +4,17 @@ import {
   Text,
   Modal,
   FlatList,
-  TouchableOpacity,
   StyleSheet,
   Alert,
-  Button,
   TouchableWithoutFeedback,
-  Keyboard,
   Pressable,
 } from "react-native";
-import { OrderStatus, statusColors } from "@/services/orders";
+import {
+  OrderStatus,
+  statusColors,
+  updateOrderStatus,
+} from "@/services/orders";
+import { router } from "expo-router";
 
 export default function MyPicker({ orderID }: { orderID: number }) {
   const [status, setStatus] = useState<string>("Preparando");
@@ -41,10 +43,17 @@ export default function MyPicker({ orderID }: { orderID: number }) {
     },
   ];
 
-  const handleStatusChange = (itemValue: string) => {
-    setStatus(itemValue);
-    setModalVisible(false); // Cerrar el modal al seleccionar un estado
-    Alert.alert(`El estado del pedido se ha cambiado a: ${itemValue}`);
+  const handleStatusChange = async (itemValue: OrderStatus) => {
+    try {
+      await updateOrderStatus(orderID, itemValue);
+      setStatus(itemValue);
+      setModalVisible(false);
+
+      Alert.alert("Éxito", "Estado del pedido actualizado correctamente");
+      router.replace("/admin/orders");
+    } catch (error) {
+      Alert.alert("Error", "No se pudo cambiar el estado del pedido");
+    }
   };
 
   return (
@@ -73,7 +82,7 @@ export default function MyPicker({ orderID }: { orderID: number }) {
                   data={pickeroptions}
                   keyExtractor={(item) => item.value}
                   renderItem={({ item }) => (
-                    <Pressable onPress={() => handleStatusChange(item.label)}>
+                    <Pressable onPress={() => handleStatusChange(item.value)}>
                       <View
                         style={[styles.option, { borderLeftColor: item.color }]}
                       >

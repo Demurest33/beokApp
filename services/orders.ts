@@ -165,3 +165,17 @@ export async function decodeQr(hash: string) {
     return null;
   }
 }
+
+export async function updateOrderStatus(orderId: number, status: OrderStatus) {
+  try {
+    const response = await api.patch(`/orders/${orderId}/status`, {
+      status,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error al actualizar el estado del pedido:", error);
+
+    return null;
+  }
+}
