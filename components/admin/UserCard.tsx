@@ -4,14 +4,13 @@ import {
   Text,
   StyleSheet,
   Pressable,
-  Linking,
   Alert,
   Modal,
   TouchableOpacity,
-  TextInput,
 } from "react-native";
 import { User, Role } from "@/types/User";
 import { updateRole } from "@/services/users";
+import WhatsappLink from "../WhatsappLink";
 
 interface UserCardProps {
   user: User;
@@ -21,19 +20,6 @@ interface UserCardProps {
 export default function UserCard({ user, fetchUsers }: UserCardProps) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedRole, setSelectedRole] = useState<Role>(user.role);
-
-  const openWhatsApp = (phone: string) => {
-    const url = `whatsapp://send?phone=${phone}`;
-    Linking.canOpenURL(url)
-      .then((supported) => {
-        if (supported) {
-          return Linking.openURL(url);
-        } else {
-          Alert.alert("Error", "No se puede abrir WhatsApp");
-        }
-      })
-      .catch((err) => console.error("Error al abrir WhatsApp", err));
-  };
 
   const changeRole = async (newRole: Role) => {
     try {
@@ -59,11 +45,7 @@ export default function UserCard({ user, fetchUsers }: UserCardProps) {
             {user.name} {user.lastname}
           </Text>
 
-          <Pressable onPress={() => openWhatsApp(user.phone)}>
-            <Text style={[styles.userText, { color: "blue" }]}>
-              {user.phone}
-            </Text>
-          </Pressable>
+          <WhatsappLink phone={user.phone} />
         </View>
 
         {/* Pressable para abrir el modal */}

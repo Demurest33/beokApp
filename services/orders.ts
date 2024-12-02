@@ -32,6 +32,26 @@ export interface orderResponse {
   hash: string;
 }
 
+export interface adminOrderResponse {
+  created_at: string;
+  id: number;
+  message: string;
+  payment_type: string;
+  pick_up_date: string;
+  status: OrderStatus;
+  total: number;
+  updated_at: string;
+  user_id: number;
+  is_fav: boolean;
+  hash: string;
+  user: {
+    id: number;
+    name: string;
+    lastname: string;
+    phone: string;
+  };
+}
+
 export enum OrderStatus {
   preparando = "preparando",
   listo = "listo",

@@ -46,6 +46,7 @@ export default function UsersScreen() {
       ) : (
         <>
           <TextInput
+            keyboardType="phone-pad"
             style={styles.input}
             onChange={(event) => {
               if (event.nativeEvent.text === "") {

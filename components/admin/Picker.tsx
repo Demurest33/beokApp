@@ -10,17 +10,35 @@ import {
   Button,
   TouchableWithoutFeedback,
   Keyboard,
+  Pressable,
 } from "react-native";
+import { OrderStatus, statusColors } from "@/services/orders";
 
 export default function MyPicker({ orderID }: { orderID: number }) {
   const [status, setStatus] = useState<string>("Preparando");
   const [modalVisible, setModalVisible] = useState(false);
 
   const pickeroptions = [
-    { label: "Preparando", value: "Preparando", color: "#FFBF00" },
-    { label: "Listo", value: "Listo", color: "#32CD32" },
-    { label: "Entregado", value: "Entregado", color: "#1E90FF" },
-    { label: "Cancelado", value: "Cancelado", color: "#FF6347" },
+    {
+      label: "Preparando",
+      value: OrderStatus.preparando,
+      color: statusColors[OrderStatus.preparando],
+    },
+    {
+      label: "Listo",
+      value: OrderStatus.listo,
+      color: statusColors[OrderStatus.listo],
+    },
+    {
+      label: "Entregado",
+      value: OrderStatus.entregado,
+      color: statusColors[OrderStatus.entregado],
+    },
+    {
+      label: "Cancelado",
+      value: OrderStatus.cancelado,
+      color: statusColors[OrderStatus.cancelado],
+    },
   ];
 
   const handleStatusChange = (itemValue: string) => {
@@ -31,40 +49,42 @@ export default function MyPicker({ orderID }: { orderID: number }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Cambiar estado del pedido</Text>
-      <Text style={styles.subtitle}>Estado actual: {status}</Text>
-
       {/* Botón para abrir el modal de selección de estado */}
-      <Button
-        title="Seleccionar estado"
+      <Pressable
+        style={styles.button}
+        children={<Text style={styles.btnText}>Cambiar estado del pedido</Text>}
         onPress={() => setModalVisible(true)}
       />
 
       {/* Modal que contiene el FlatList */}
       <Modal visible={modalVisible} animationType="fade" transparent={true}>
         <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-          <View style={styles.modalBackground}>
+          <Pressable
+            style={styles.modalBackground}
+            onPress={() => setModalVisible(false)}
+          >
             <TouchableWithoutFeedback>
               <View style={styles.modalContainer}>
-                <Text style={styles.modalTitle}>
+                {/* <Text style={styles.modalTitle}>
                   Selecciona el nuevo estado
-                </Text>
+                </Text> */}
                 <FlatList
+                  style={{ width: "100%" }}
                   data={pickeroptions}
                   keyExtractor={(item) => item.value}
                   renderItem={({ item }) => (
-                    <TouchableOpacity
-                      style={[styles.option, { borderLeftColor: item.color }]}
-                      onPress={() => handleStatusChange(item.value)}
-                    >
-                      <Text style={styles.optionText}>{item.label}</Text>
-                    </TouchableOpacity>
+                    <Pressable onPress={() => handleStatusChange(item.label)}>
+                      <View
+                        style={[styles.option, { borderLeftColor: item.color }]}
+                      >
+                        <Text style={styles.optionText}>{item.label}</Text>
+                      </View>
+                    </Pressable>
                   )}
                 />
-                <Button title="Cerrar" onPress={() => setModalVisible(false)} />
               </View>
             </TouchableWithoutFeedback>
-          </View>
+          </Pressable>
         </TouchableWithoutFeedback>
       </Modal>
     </View>
@@ -96,9 +116,13 @@ const styles = StyleSheet.create({
     borderLeftWidth: 5,
     marginBottom: 10,
     borderRadius: 5,
+    borderWidth: 1,
+    borderTopColor: "#ccc",
+    borderRightColor: "#ccc",
+    borderBottomColor: "#ccc",
   },
   optionText: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
     color: "#333",
   },
@@ -119,5 +143,16 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 15,
     fontWeight: "bold",
+  },
+  button: {
+    backgroundColor: "#3D9D3D",
+    padding: 10,
+    borderRadius: 10,
+    elevation: 2,
+  },
+  btnText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 18,
   },
 });

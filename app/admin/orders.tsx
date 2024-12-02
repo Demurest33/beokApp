@@ -7,19 +7,20 @@ import {
   RefreshControl,
   Pressable,
   ScrollView,
+  TextInput,
 } from "react-native";
 import { getOrders } from "@/services/orders";
 import { useEffect, useState } from "react";
 import useUserStore from "@/store/userStore";
-import PedidoComponent from "@/components/Pedido";
-import { orderResponse } from "@/services/orders";
+import PedidoComponent from "@/components/admin/PedidosAdmin";
+import { adminOrderResponse } from "@/services/orders";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
 
 export default function OrdersScreen() {
   const userStore = useUserStore();
-  const [orders, setOrders] = useState<orderResponse[]>([]);
+  const [orders, setOrders] = useState<adminOrderResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchedUser, setSearchedUser] = useState<string | null>(null);
 
   useEffect(() => {
     fetchOrders();
@@ -33,8 +34,6 @@ export default function OrdersScreen() {
         if (orders) {
           setOrders(orders);
         }
-
-        console.log(orders.length);
       } catch (error) {
         console.error("Error al obtener los pedidos:", error);
         alert("Error al obtener los pedidos");
@@ -61,14 +60,34 @@ export default function OrdersScreen() {
             <RefreshControl refreshing={loading} onRefresh={fetchOrders} />
           }
         >
-          <Pressable style={styles.loginContainer}>
+          <Pressable style={styles.empty}>
             <Ionicons name="document-text" size={80} color="gray" />
             <Text style={styles.text}>No hay pedidos</Text>
           </Pressable>
         </ScrollView>
       ) : (
-        <>
+        <View style={styles.container2}>
+          <TextInput
+            keyboardType="phone-pad"
+            style={styles.input}
+            onChange={(event) => {
+              if (event.nativeEvent.text === "") {
+                setSearchedUser(null);
+              }
+            }}
+            placeholder="Buscar por número de teléfono"
+            onEndEditing={(event) => {
+              setSearchedUser(event.nativeEvent.text);
+            }}
+          />
+
           <FlatList
+            ListEmptyComponent={
+              <View style={styles.empty}>
+                <Ionicons name="document-text" size={80} color="gray" />
+                <Text style={styles.text}>No hay pedidos</Text>
+              </View>
+            }
             refreshControl={
               <RefreshControl
                 refreshing={false}
@@ -76,7 +95,11 @@ export default function OrdersScreen() {
                 colors={["#000"]}
               />
             }
-            data={orders}
+            data={
+              searchedUser
+                ? orders.filter((order) => order.user.phone === searchedUser)
+                : orders
+            }
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
               <PedidoComponent
@@ -86,19 +109,13 @@ export default function OrdersScreen() {
               />
             )}
           />
-        </>
+        </View>
       )}
     </>
   );
 }
 
 const styles = StyleSheet.create({
-  loginContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "white",
-  },
   text: {
     fontSize: 18,
     fontWeight: "bold",
@@ -121,5 +138,23 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "gray",
+    borderRadius: 8,
+    padding: 8,
+    marginVertical: 8,
+    marginHorizontal: 16,
+  },
+  empty: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  container2: {
+    flex: 1,
+    width: "100%",
+    backgroundColor: "white",
   },
 });

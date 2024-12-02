@@ -1,6 +1,7 @@
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import { View, Text, FlatList, StyleSheet } from "react-native";
 import { decodeQrResponse } from "@/services/orders";
-import MyPicker from "./Picker";
+import MyPicker from "@/components/admin/Picker";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Order({ order }: { order: decodeQrResponse }) {
   const {
@@ -11,54 +12,113 @@ export default function Order({ order }: { order: decodeQrResponse }) {
     total,
     message,
     created_at,
-    hash,
+    updated_at,
   } = order.order;
 
-  return (
-    <FlatList
-      style={styles.container}
-      ListHeaderComponent={
-        <View>
-          <Text style={styles.title}>Detalles del Pedido</Text>
-          <Text style={styles.subtitle}>Pedido No° {id}</Text>
-          <Text style={styles.status}>Estado: {status}</Text>
-          <Text style={styles.info}>Fecha de recogida: {pick_up_date}</Text>
-          <Text style={styles.info}>Método de pago: {payment_type}</Text>
-          <Text style={styles.info}>Total: ${total}</Text>
-          <Text style={styles.message}>
-            Indicaciones: {message || "Sin indicaciones"}
-          </Text>
-        </View>
-      }
-      data={order.order_products}
-      keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => (
-        <View style={styles.productContainer}>
-          <Text style={styles.productName}>{item.product_name}</Text>
-          <Text style={styles.productInfo}>Cantidad: {item.quantity}</Text>
-          <Text style={styles.productInfo}>Precio: ${item.price}</Text>
+  const translatedStatus = {
+    preparando: "Preparando pedido",
+    listo: "Pedido listo",
+    entregado: "Pedido entregado",
+    cancelado: "Pedido cancelado",
+  };
 
-          {/* Mostrar las opciones seleccionadas */}
-          <Text style={styles.productInfo}>Opciones seleccionadas:</Text>
-          {Object.entries(item.selected_options).map(
-            ([optionName, optionValue], index) => (
-              <Text key={index} style={styles.optionItem}>
-                {optionName}: {optionValue}
+  return (
+    <View style={styles.container}>
+      <FlatList
+        style={styles.body}
+        ListHeaderComponent={
+          <>
+            <Text style={[styles.status, styles.title]}>
+              {translatedStatus[status]}
+            </Text>
+            <View
+              style={{ borderBottomColor: "#ccc", borderBottomWidth: 0.8 }}
+            />
+          </>
+        }
+        data={order.order_products}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <View style={{ padding: 10 }}>
+            <View style={styles.productHeader}>
+              <Text style={styles.productName}>
+                {`(${item.quantity})`} {item.product_name}
               </Text>
-            )
-          )}
-        </View>
-      )}
-      ListFooterComponent={<MyPicker orderID={id} key={id} />}
-      ListEmptyComponent={<Text>No hay productos en este pedido.</Text>}
-    />
+              <Text style={{ fontSize: 20 }}>${item.price}</Text>
+            </View>
+
+            <View>
+              {Object.entries(item.selected_options).map(
+                ([optionName, optionValue], index) => (
+                  <Text key={index} style={styles.optionItem}>
+                    {optionName}: {optionValue}
+                  </Text>
+                )
+              )}
+            </View>
+          </View>
+        )}
+        ListFooterComponent={
+          <>
+            <View style={[styles.productHeader, { padding: 16 }]}>
+              <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+                Total {payment_type}
+              </Text>
+              <Text style={{ fontSize: 20, fontWeight: "bold" }}>${total}</Text>
+            </View>
+            <Text style={styles.message}>{message || "Sin indicaciones"}</Text>
+            <Text style={styles.subtitle}>Fecha de entrega</Text>
+            <View
+              style={[styles.productHeader, { justifyContent: "space-evenly" }]}
+            >
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 2 }}
+              >
+                <Ionicons name="calendar" size={28} color="black" />
+                <Text style={{ fontSize: 20 }}>
+                  {pick_up_date.split(" ")[0]}
+                </Text>
+              </View>
+
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 2 }}
+              >
+                <Ionicons name="time" size={28} color="black" />
+                <Text style={{ fontSize: 20 }}>
+                  {pick_up_date.split(" ")[1]}
+                </Text>
+                <Text style={{ fontSize: 20 }}>
+                  {pick_up_date.split(" ")[2]}
+                </Text>
+              </View>
+            </View>
+            <Text
+              style={{ textAlign: "center", marginVertical: 10, fontSize: 16 }}
+            >
+              Pedido realizado: {new Date(created_at).toLocaleString()}
+            </Text>
+            <Text
+              style={{ textAlign: "center", marginVertical: 10, fontSize: 16 }}
+            >
+              {status === "cancelado"
+                ? "Pedido cancelado: "
+                : "Pedido entregado: "}
+              {status === "entregado" || status === "cancelado"
+                ? new Date(updated_at).toLocaleString()
+                : "------"}
+            </Text>
+            <MyPicker orderID={id} key={id} />
+          </>
+        }
+        ListEmptyComponent={<Text>No hay productos en este pedido.</Text>}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
     backgroundColor: "#fff",
   },
   title: {
@@ -67,8 +127,9 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: 18,
-    marginBottom: 4,
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 8,
   },
   status: {
     fontSize: 16,
@@ -76,41 +137,42 @@ const styles = StyleSheet.create({
     color: "#2a9d8f",
     marginBottom: 8,
   },
-  info: {
+  message: {
     fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: "gray",
+    padding: 10,
+    backgroundColor: "#ccc",
+    borderRadius: 5,
+    marginHorizontal: 16,
+  },
+  productName: {
+    fontSize: 20,
+    fontWeight: "bold",
     marginBottom: 4,
   },
-  message: {
-    fontSize: 14,
-    fontStyle: "italic",
-    marginBottom: 12,
+  optionItem: {
+    fontSize: 16,
+    marginLeft: 10,
+    marginBottom: 2,
+    color: "#555",
   },
-  productContainer: {
+  productHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  body: {
+    marginTop: 10,
+    marginHorizontal: 10,
     padding: 10,
     borderWidth: 1,
     borderColor: "#ddd",
     borderRadius: 8,
     marginBottom: 10,
     backgroundColor: "#f9f9f9",
-  },
-  productName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 4,
-  },
-  productInfo: {
-    fontSize: 14,
-    marginBottom: 2,
-  },
-  optionItem: {
-    fontSize: 14,
-    marginLeft: 10,
-    marginBottom: 2,
-    color: "#555",
-  },
-  loaderContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
   },
 });

@@ -1,8 +1,16 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { router } from "expo-router";
-import { orderResponse, toogleFavOrder } from "@/services/orders";
+import { adminOrderResponse, statusColors } from "@/services/orders";
 
-export default function PedidoComponent(pedido: orderResponse) {
+interface PedidoComponentProps {
+  pedido: adminOrderResponse;
+  fetchOrders: () => void;
+}
+
+export default function PedidoComponent({
+  pedido,
+  fetchOrders,
+}: PedidoComponentProps) {
   const handlePressProduct = () => {
     router.push({
       pathname: `/myOrders/[id]`,
@@ -14,36 +22,27 @@ export default function PedidoComponent(pedido: orderResponse) {
         total: pedido.total,
         message: pedido.message,
         created_at: pedido.created_at,
+        updated_at: pedido.updated_at,
         hash: pedido.hash,
+        name: pedido.user.name,
+        last_name: pedido.user.lastname,
+        phone: pedido.user.phone,
       },
     });
-  };
-
-  const statusColors = {
-    preparando: "#FFA500", // Naranja
-    listo: "#32CD32", // Verde
-    entregado: "#1E90FF", // Azul
-    cancelado: "#FF4500", // Rojo
   };
 
   const statusColor = statusColors[pedido.status];
 
   return (
     <>
-      <View style={styles.card}>
+      <Pressable onPress={handlePressProduct} style={styles.card}>
         {/* Franja de estado */}
         <View style={[styles.statusStrip, { backgroundColor: statusColor }]} />
 
-        {/* Contenido de la tarjeta */}
         <View style={styles.cardContent}>
           <View style={styles.header}>
-            {/* <Text style={styles.date}>
-                {pedido.created_at.split("T")[0]} -{" "}
-                {pedido.created_at.split("T")[1].split(".")[0]}
-              </Text> */}
-
-            <Text style={[styles.status, { color: statusColor }]}>
-              Estado: {pedido.status}
+            <Text style={[styles.status]}>
+              {pedido.user.name} {pedido.user.lastname}
             </Text>
 
             <Text style={styles.total}>${pedido.total}</Text>
@@ -53,14 +52,9 @@ export default function PedidoComponent(pedido: orderResponse) {
             Método de pago: {pedido.payment_type}
           </Text>
 
-          {/* Botón e interacción */}
-          <View style={styles.actions}>
-            <Pressable onPress={handlePressProduct} style={styles.detailButton}>
-              <Text style={styles.detailButtonText}>Ver detalles</Text>
-            </Pressable>
-          </View>
+          <Text style={styles.date}>{pedido.pick_up_date}</Text>
         </View>
-      </View>
+      </Pressable>
     </>
   );
 }
@@ -80,7 +74,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   statusStrip: {
-    width: 8,
+    width: 12,
   },
   cardContent: {
     flex: 1,

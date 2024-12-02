@@ -9,12 +9,14 @@ import {
   ScrollView,
 } from "react-native";
 import { useLocalSearchParams, Link } from "expo-router";
-import { getOrderDetails, order_product } from "@/services/orders";
+import { getOrderDetails, order_product, OrderStatus } from "@/services/orders";
 import { useEffect, useState } from "react";
 import useUserStore from "@/store/userStore";
 import QrCode from "@/components/QrCode";
 import MyPicker from "@/components/admin/Picker";
 import { Role } from "@/types/User";
+import { Ionicons } from "@expo/vector-icons";
+import WhatsappLink from "@/components/WhatsappLink";
 
 export default function OrderDetails() {
   const {
@@ -26,11 +28,17 @@ export default function OrderDetails() {
     message,
     created_at,
     hash,
+    updated_at,
+    name,
+    last_name,
+    phone,
   } = useLocalSearchParams();
 
   const [orderDetails, setOrderDetails] = useState<order_product[]>([]);
   const [loading, setLoading] = useState(true);
   const userStore = useUserStore();
+
+  // darle formato a las fechas de created y updated
 
   useEffect(() => {
     async function fetchOrderDetails() {
@@ -48,6 +56,13 @@ export default function OrderDetails() {
     fetchOrderDetails();
   }, [id]);
 
+  const translatedStatus = {
+    [OrderStatus.preparando]: "Preparando pedido",
+    [OrderStatus.listo]: "Pedido listo",
+    [OrderStatus.entregado]: "Pedido entregado",
+    [OrderStatus.cancelado]: "Pedico cancelado",
+  };
+
   if (loading) {
     return (
       <View style={styles.loaderContainer}>
@@ -58,59 +73,139 @@ export default function OrderDetails() {
   }
 
   return (
-    <FlatList
-      style={styles.container}
-      ListHeaderComponent={
-        <View>
-          <Text style={styles.title}>Detalles del Pedido</Text>
-          <Text style={styles.subtitle}>Pedido No° {id}</Text>
-          <Text style={styles.status}>Estado: {status}</Text>
-          <Text style={styles.info}>Fecha de recogida: {pick_up_date}</Text>
-          <Text style={styles.info}>Método de pago: {payment_type}</Text>
-          <Text style={styles.info}>Total: ${total}</Text>
-          <Text style={styles.message}>
-            Indicaciones: {message || "Sin indicaciones"}
-          </Text>
-        </View>
-      }
-      data={orderDetails}
-      keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => (
-        <View style={styles.productContainer}>
-          <Text style={styles.productName}>{item.product_name}</Text>
-          <Text style={styles.productInfo}>Cantidad: {item.quantity}</Text>
-          <Text style={styles.productInfo}>Precio: ${item.price}</Text>
+    <View style={styles.container}>
+      {userStore.user?.role === Role.ADMIN ||
+        (userStore.user?.role === Role.AXULIAR && (
+          <View style={styles.header}>
+            <Text style={styles.headerText}>Pedido No° {id} </Text>
+          </View>
+        ))}
+      <FlatList
+        style={styles.body}
+        ListHeaderComponent={
+          <>
+            <Text style={[styles.status, styles.title]}>
+              {translatedStatus[status as OrderStatus]}
+            </Text>
 
-          {/* Mostrar las opciones seleccionadas */}
-          <Text style={styles.productInfo}>Opciones seleccionadas:</Text>
-          {Object.entries(item.selected_options).map(
-            ([optionName, optionValue], index) => (
-              <Text key={index} style={styles.optionItem}>
-                {optionName}: {optionValue}
+            <View
+              style={{
+                borderBottomColor: "#ccc",
+                borderBottomWidth: 0.8,
+              }}
+            />
+          </>
+        }
+        data={orderDetails}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <View style={{ padding: 10 }}>
+            <View style={styles.productHeader}>
+              <Text style={styles.productName}>
+                {`(${item.quantity})`} {item.product_name}
               </Text>
-            )
-          )}
-        </View>
-      )}
-      ListFooterComponent={
-        userStore.user?.role === Role.ADMIN ? (
-          <MyPicker
-            orderID={parseInt(id.toString())}
-            key={parseInt(id.toString())}
-          />
-        ) : (
-          <QrCode pedidoId={hash.toString()} />
-        )
-      }
-      ListEmptyComponent={<Text>No hay productos en este pedido.</Text>}
-    />
+              <Text style={{ fontSize: 20 }}>${item.price}</Text>
+            </View>
+
+            <View>
+              {Object.entries(item.selected_options).map(
+                ([optionName, optionValue], index) => (
+                  <Text key={index} style={styles.optionItem}>
+                    {optionName}: {optionValue}
+                  </Text>
+                )
+              )}
+            </View>
+          </View>
+        )}
+        // bottomm componen
+        ListFooterComponent={
+          <>
+            <View style={[styles.productHeader, { padding: 16 }]}>
+              <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+                Total {payment_type}
+              </Text>
+              <Text style={{ fontSize: 20, fontWeight: "bold" }}>${total}</Text>
+            </View>
+
+            <Text style={styles.message}>{message || "Sin indicaciones"}</Text>
+
+            <Text style={styles.subtitle}>Fecha de entrega</Text>
+
+            <View
+              style={[styles.productHeader, { justifyContent: "space-evenly" }]}
+            >
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 2 }}
+              >
+                <Ionicons name="calendar" size={28} color="black" />
+                <Text style={{ fontSize: 20 }}>
+                  {pick_up_date.toString().split(" ")[0]}
+                </Text>
+              </View>
+
+              <View
+                style={{ flexDirection: "row", alignItems: "center", gap: 2 }}
+              >
+                <Ionicons name="time" size={28} color="black" />
+                <Text style={{ fontSize: 20 }}>
+                  {pick_up_date.toString().split(" ")[1]}
+                </Text>
+
+                <Text style={{ fontSize: 20 }}>
+                  {pick_up_date.toString().split(" ")[2]}
+                </Text>
+              </View>
+            </View>
+
+            <Text
+              style={{ textAlign: "center", marginVertical: 10, fontSize: 16 }}
+            >
+              Pedido realizado:{" "}
+              {new Date(created_at.toString()).toLocaleString()}
+            </Text>
+            <Text
+              style={{ textAlign: "center", marginVertical: 10, fontSize: 16 }}
+            >
+              {status === OrderStatus.cancelado
+                ? "Pedido cancelado: "
+                : "Pedido entregado: "}
+              {status === OrderStatus.entregado ||
+              status === OrderStatus.cancelado
+                ? new Date(updated_at.toString()).toLocaleString()
+                : "------"}
+            </Text>
+
+            {userStore.user?.role === Role.ADMIN ||
+            userStore.user?.role === Role.AXULIAR ? (
+              <>
+                <Text style={styles.subtitle}>Datos del cliente</Text>
+                <View style={{ paddingHorizontal: 16, gap: 2 }}>
+                  <Text style={{ fontSize: 18 }}>
+                    {name} {last_name}
+                  </Text>
+                  <WhatsappLink phone={phone.toString()} />
+
+                  <MyPicker
+                    orderID={parseInt(id.toString())}
+                    key={parseInt(id.toString())}
+                  />
+                </View>
+              </>
+            ) : (
+              <QrCode pedidoId={hash.toString()} />
+            )}
+          </>
+        }
+        ListEmptyComponent={<Text>No hay productos en este pedido.</Text>}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
     backgroundColor: "#fff",
   },
   title: {
@@ -119,8 +214,9 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: 18,
-    marginBottom: 4,
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 8,
   },
   status: {
     fontSize: 16,
@@ -128,34 +224,24 @@ const styles = StyleSheet.create({
     color: "#2a9d8f",
     marginBottom: 8,
   },
-  info: {
-    fontSize: 16,
-    marginBottom: 4,
-  },
   message: {
-    fontSize: 14,
-    fontStyle: "italic",
-    marginBottom: 12,
-  },
-  productContainer: {
-    padding: 10,
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 16,
     borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    marginBottom: 10,
-    backgroundColor: "#f9f9f9",
+    borderColor: "gray",
+    padding: 10,
+    backgroundColor: "#ccc",
+    borderRadius: 5,
+    marginHorizontal: 16,
   },
   productName: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: "bold",
     marginBottom: 4,
   },
-  productInfo: {
-    fontSize: 14,
-    marginBottom: 2,
-  },
   optionItem: {
-    fontSize: 14,
+    fontSize: 16,
     marginLeft: 10,
     marginBottom: 2,
     color: "#555",
@@ -163,6 +249,36 @@ const styles = StyleSheet.create({
   loaderContainer: {
     flex: 1,
     justifyContent: "center",
+    alignItems: "center",
+  },
+  header: {
+    backgroundColor: "#3D9D3D",
+    display: "flex",
+    flexDirection: "row",
+    marginTop: 10,
+    justifyContent: "center",
+    paddingVertical: 4,
+    alignItems: "center",
+  },
+  headerText: {
+    color: "white",
+    fontSize: 24,
+  },
+  body: {
+    marginTop: 10,
+    marginHorizontal: 10,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 8,
+    marginBottom: 10,
+    backgroundColor: "#f9f9f9",
+    flex: 1,
+  },
+  productHeader: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
   },
 });
