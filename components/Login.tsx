@@ -65,8 +65,6 @@ export default function LoginScreen() {
     <View style={styles.stepContainer}>
       <Text style={styles.title}>Incia sesión con tu número</Text>
 
-      {loading ? <ActivityIndicator size="large" color="#000" /> : null}
-
       <TextInput
         style={styles.input}
         placeholder="Teléfono (WhatsApp)"
@@ -84,7 +82,15 @@ export default function LoginScreen() {
       />
 
       {/* replace   |   asChild*/}
-      <Pressable style={styles.button} onPress={handleLogin}>
+      <Pressable
+        style={
+          loading
+            ? { ...styles.button, backgroundColor: "#83B683" }
+            : styles.button
+        }
+        onPress={handleLogin}
+      >
+        {loading ? <ActivityIndicator size="small" color="#fff" /> : null}
         <Text style={styles.buttonText}>Iniciar Sesión</Text>
       </Pressable>
     </View>
@@ -120,6 +126,11 @@ const styles = StyleSheet.create({
     borderColor: "#3D9D3D",
     borderWidth: 1,
     elevation: 5,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 8,
   },
   buttonText: {
     color: "white",
