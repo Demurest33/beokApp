@@ -3,42 +3,28 @@ import {
   StyleSheet,
   Text,
   Pressable,
-  Image,
+  ImageBackground,
   TextInput,
 } from "react-native";
 import useUserStore from "@/store/userStore";
 import { Ionicons } from "@expo/vector-icons";
-import { router, Link } from "expo-router";
+import { Link, router } from "expo-router";
 
 export default function ProfileComponent() {
   const userStore = useUserStore();
 
-  const goLogin = () => {
-    router.replace("/login");
-  };
-
   return (
-    <View style={styles.container}>
-      {/* banner image */}
-      <Image
-        style={styles.banner}
-        source={require("../assets/images/profile_banner.png")}
-      />
-
-      {/* user info */}
-      <View
-        style={{
-          padding: 16,
-          gap: 8,
-          justifyContent: "center",
-          flexDirection: "column",
-        }}
-      >
+    <ImageBackground
+      style={styles.container}
+      source={require("../assets/images/profile_banner.png")}
+      imageStyle={{ opacity: 0.8 }}
+    >
+      {/* Contenedor de la información */}
+      <View style={styles.infoContainer}>
         <Text style={styles.label}>{"Nombre(s)"}</Text>
         <TextInput
           editable={false}
           value={userStore.user?.name}
-          aria-disabled
           style={styles.input}
         />
 
@@ -46,7 +32,6 @@ export default function ProfileComponent() {
         <TextInput
           editable={false}
           value={userStore.user?.lastname}
-          aria-disabled
           style={styles.input}
         />
 
@@ -54,67 +39,72 @@ export default function ProfileComponent() {
         <TextInput
           editable={false}
           value={userStore.user?.phone}
-          aria-disabled
           style={styles.input}
         />
-      </View>
 
-      <Link href={"/login"} style={styles.button}>
-        <Ionicons name="log-out-outline" size={20} color="#fff" />
-        <Text style={styles.butonLabel}> Cerrar sesión</Text>
-      </Link>
-    </View>
+        <Pressable
+          onPress={() => {
+            router.push("/login");
+          }}
+          style={styles.button}
+        >
+          <Ionicons name="log-out-outline" size={22} color="#fff" />
+          <Text style={styles.buttonLabel}> Cerrar sesión</Text>
+        </Pressable>
+      </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    justifyContent: "center",
     alignItems: "center",
   },
-  banner: {
-    width: "100%",
-    height: 150,
-    resizeMode: "cover",
-    opacity: 1,
-    backgroundColor: "black",
+  infoContainer: {
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    borderRadius: 10,
+    padding: 20,
+    width: "90%",
+    maxWidth: 350,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
   input: {
-    borderColor: "gray",
+    borderColor: "#aaa",
     borderWidth: 1,
-    // width: "100%",
-    // maxWidth: 300,
     borderRadius: 5,
     textAlign: "center",
     padding: 10,
-    fontSize: 20,
-    backgroundColor: "#FBFBFB",
-    elevation: 1,
+    fontSize: 18,
+    marginBottom: 10,
+    backgroundColor: "#fff",
     fontWeight: "bold",
   },
   label: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: "bold",
-    color: "#595757",
-    textAlign: "center",
+    color: "#333",
     marginBottom: 5,
   },
   button: {
-    padding: 10,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 12,
     borderRadius: 5,
-    color: "#fff",
-    maxWidth: 300,
     backgroundColor: "#3D9D3D",
-    textAlign: "center",
-    borderColor: "#3D9D3D",
-    borderWidth: 1,
-    maxHeight: 50,
-    margin: "auto",
+    marginTop: 10,
   },
-  butonLabel: {
-    textAlign: "center",
-    fontSize: 20,
+  buttonLabel: {
+    color: "#fff",
+    fontSize: 18,
     fontWeight: "bold",
+    marginLeft: 5,
   },
 });
