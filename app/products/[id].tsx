@@ -98,7 +98,6 @@ export default function ProductComponent() {
 
     cartStore.addProduct(productWithOptions);
 
-    //añadir modal de ir al carrito o seguir comprando
     setShowModal(true);
   }
 
@@ -239,11 +238,14 @@ export default function ProductComponent() {
           transparent={true}
           onRequestClose={() => setShowModal(false)}
         >
-          <View style={styles.modalOverlay}>
+          <Pressable
+            style={styles.modalOverlay}
+            onPress={() => setShowModal(false)}
+          >
             <View style={styles.modalContainer}>
               {/* Mensaje */}
               <Text style={styles.modalMessage}>
-                ¿Estás seguro de realizar esta acción?
+                Producto agregado al carrito
               </Text>
 
               {/* Botones */}
@@ -267,7 +269,7 @@ export default function ProductComponent() {
                 </Pressable>
               </View>
             </View>
-          </View>
+          </Pressable>
         </Modal>
 
         <Pressable onPress={getProductAndAttachoptions} style={styles.button}>
@@ -402,6 +404,7 @@ const styles = StyleSheet.create({
   modalMessage: {
     fontSize: 20,
     marginBottom: 20,
+    textAlign: "center",
   },
   buttonContainer: {
     flexDirection: "row",

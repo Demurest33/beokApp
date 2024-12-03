@@ -6,6 +6,7 @@ import {
   TextInput,
   Platform,
   ScrollView,
+  Alert,
 } from "react-native";
 import useCartStore from "@/store/cart";
 import { useState, useEffect } from "react";
@@ -21,6 +22,7 @@ import { paymentType } from "@/store/cart";
 import { Order, createOrder } from "@/services/orders";
 import useUserStore from "@/store/userStore";
 import { Ionicons } from "@expo/vector-icons";
+import { Router, router } from "expo-router";
 
 export default function Carrito() {
   const cartStore = useCartStore();
@@ -92,8 +94,34 @@ export default function Carrito() {
     const currentDate = selectedDate || pickUpDate;
 
     // si se selcciona una fecha en domingo, alertar al usuario
-    if (currentDate.getDay() === 0) {
-      alert("No se aceptan pedidos los domingos");
+    if (pickUpDate.getDay() === 0) {
+      // alert("No se aceptan pedidos los domingos.");
+      Alert.alert(
+        "No se aceptan pedidos los domingos",
+        "Selecciona una nueva fecha y hora de recogida.",
+        [
+          {
+            text: "Cancelar",
+            style: "destructive",
+          },
+          {
+            text: "Seleccionar",
+            style: "default",
+            onPress: () => {
+              {
+                // Si se selecciona un domingo, se cambia la fecha a el lunes
+                const newdate = mexicoTime as Date;
+                newdate.setDate(newdate.getDate() + 1);
+                setPickUpDate(newdate);
+                setShow(true);
+              }
+            },
+          },
+        ],
+        {
+          cancelable: true,
+        }
+      );
       return;
     }
 
@@ -108,12 +136,55 @@ export default function Carrito() {
     }
 
     if (!userStore.user) {
-      alert("Debes iniciar sesión para realizar un pedido.");
+      Alert.alert(
+        "Inicia sesión para realizar un pedido",
+        "¿Deseas iniciar sesión?",
+        [
+          {
+            text: "Cancelar",
+            style: "destructive",
+          },
+          {
+            text: "Iniciar sesión",
+            style: "default",
+            onPress: () => {
+              {
+                router.push("/login");
+              }
+            },
+          },
+        ],
+        {
+          cancelable: true,
+        }
+      );
       return;
     }
 
     if (!userStore.user.verified_at) {
-      alert("Debes verificar tu número antes de realizar un pedido.");
+      // alert("Debes verificar tu número antes de realizar un pedido.");
+      Alert.alert(
+        "Verifica tu número de teléfono",
+        "Debes verificar tu número antes de realizar un pedido. ¿Deseas verificarlo ahora?",
+        [
+          {
+            text: "Cancelar",
+            style: "destructive",
+          },
+          {
+            text: "Verificar",
+            style: "default",
+            onPress: () => {
+              {
+                router.push("/smsVerification");
+              }
+            },
+          },
+        ],
+        {
+          cancelable: true,
+        }
+      );
       return;
     }
 
@@ -144,13 +215,62 @@ export default function Carrito() {
     // Validación 1: La fecha de recogida no puede ser un día ya pasado
     if (pickUpDate < mexicoTime) {
       console.log(pickUpDate, mexicoTime);
-      alert("La fecha y hora de recogida no pueden ser en el pasado.");
+      // alert("La fecha y hora de recogida no pueden ser en el pasado.");
+      Alert.alert(
+        "Fecha y hora inválidas",
+        "La fecha y hora de recogida no pueden ser en el pasado. ¿Deseas seleccionar una nueva fecha y hora?",
+        [
+          {
+            text: "Cancelar",
+            style: "destructive",
+          },
+          {
+            text: "Seleccionar",
+            style: "default",
+            onPress: () => {
+              {
+                setPickUpDate(mexicoTime);
+                setShow(true);
+              }
+            },
+          },
+        ],
+        {
+          cancelable: true,
+        }
+      );
       return;
     }
 
     // Validación 2: No se aceptan pedidos los domingos
     if (pickUpDate.getDay() === 0) {
-      alert("No se aceptan pedidos los domingos.");
+      // alert("No se aceptan pedidos los domingos.");
+      Alert.alert(
+        "No se aceptan pedidos los domingos",
+        "Selecciona una nueva fecha y hora de recogida.",
+        [
+          {
+            text: "Cancelar",
+            style: "destructive",
+          },
+          {
+            text: "Seleccionar",
+            style: "default",
+            onPress: () => {
+              {
+                // Si se selecciona un domingo, se cambia la fecha a el lunes
+                const newdate = mexicoTime as Date;
+                newdate.setDate(newdate.getDate() + 1);
+                setPickUpDate(newdate);
+                setShow(true);
+              }
+            },
+          },
+        ],
+        {
+          cancelable: true,
+        }
+      );
       return;
     }
 
