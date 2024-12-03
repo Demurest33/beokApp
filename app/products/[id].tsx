@@ -249,7 +249,7 @@ export default function ProductComponent() {
               {/* Botones */}
               <View style={styles.buttonContainer}>
                 <Pressable
-                  style={[styles.button, { backgroundColor: "gray" }]}
+                  style={[styles.modalButton, { backgroundColor: "gray" }]}
                   onPress={() => {
                     setShowModal(false), router.replace("/(tabs)/");
                   }}
@@ -257,7 +257,7 @@ export default function ProductComponent() {
                   <Text style={styles.buttonText}>Seguir comprando</Text>
                 </Pressable>
                 <Pressable
-                  style={[styles.button, { backgroundColor: "green" }]}
+                  style={[styles.modalButton, { backgroundColor: "green" }]}
                   onPress={() => {
                     setShowModal(false);
                     router.replace("/(tabs)/carrito");
@@ -377,8 +377,9 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "white",
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
+    textAlign: "center",
   },
   actions: {
     flexDirection: "row",
@@ -405,5 +406,12 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
+  },
+  modalButton: {
+    padding: 6,
+    borderRadius: 5,
+    width: "45%",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
