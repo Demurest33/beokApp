@@ -64,12 +64,12 @@ export default function SmsVerificationScreen() {
     alert(selectedValue === 0 ? "SMS" : "Whatsapp");
 
     if (selectedValue === 0) {
-      alert("SMS");
+      // alert("SMS");
       const sms = await getSms(userStore.user!.phone);
     }
 
     if (selectedValue === 1) {
-      alert("Whatsapp");
+      // alert("Whatsapp");
       const sms = await sendWhatsapp(userStore.user!.phone);
     }
 

@@ -42,6 +42,9 @@ export default function LoginScreen() {
       userStore.setUser(response);
       saveUser(response);
 
+      setphone("");
+      setPassword("");
+
       if (response?.verified_at == null) {
         router.push("/smsVerification");
         return;

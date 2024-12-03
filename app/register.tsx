@@ -8,7 +8,11 @@ import {
 } from "react-native";
 import { useState } from "react";
 import { registerUser } from "@/services/auth";
+import { sendPushNotification } from "@/services/pushNotifications"; // Importar la función
 import { router } from "expo-router";
+import { useNotification } from "@/context/NotificationContext";
+import useUserStore from "@/store/userStore";
+import { User } from "@/types/User";
 
 export default function RegisterScreen() {
   const [name, setName] = useState("");
@@ -17,6 +21,8 @@ export default function RegisterScreen() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const { expoPushToken } = useNotification();
+  const userStore = useUserStore();
 
   async function handleRegister() {
     if (password !== confirmPassword) {
@@ -47,13 +53,35 @@ export default function RegisterScreen() {
 
     try {
       setLoading(true);
-      await registerUser({
+
+      // Registro del usuario
+      const newUser: User = await registerUser({
         name,
         lastname: lastName,
         phone,
         password,
         password_confirmation: confirmPassword,
       });
+
+      // Token de ejemplo para enviar la notificación (deberías reemplazarlo con el token del usuario registrado)
+
+      // Enviar la notificación
+
+      if (expoPushToken) {
+        await sendPushNotification(
+          expoPushToken,
+          "¡Bienvenido!",
+          "Gracias por registrarte en nuestra app. Verifica tu número de teléfono para poder realizar pedidos."
+        );
+      }
+
+      setName("");
+      setLastName("");
+      setPhone("");
+      setPassword("");
+      setConfirmPassword("");
+
+      // Navegar a la siguiente pantalla
       router.push("/smsVerification");
     } catch (error) {
       alert(error);
@@ -100,7 +128,6 @@ export default function RegisterScreen() {
 
       {loading && <ActivityIndicator size="large" color="blue" />}
 
-      {/* replace   |   asChild*/}
       <Pressable style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Registro</Text>
       </Pressable>
