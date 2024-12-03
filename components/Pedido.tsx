@@ -5,6 +5,7 @@ import {
   Pressable,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -83,7 +84,9 @@ export default function PedidoComponent({ pedido, fetchOrders }: props) {
           " " +
           thirtyMinutesBeforePickup.toLocaleTimeString()
       );
-      alert(res.message);
+      // alert(res.message);
+      Alert.alert("Orden creada", res.message);
+      await fetchOrders();
     } catch (error) {
       alert("Error al crear la orden");
       console.log(error);
