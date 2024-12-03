@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, Image } from "react-native";
-import { Link } from "expo-router";
+import { View, Text, StyleSheet, Image, Pressable } from "react-native";
+import { router } from "expo-router";
 import LoginScreen from "@/components/Login";
 import useUserStore from "@/store/userStore";
 import { useEffect, useState } from "react";
@@ -20,21 +20,36 @@ export default function HomeScreen() {
       <LoginScreen />
 
       <View style={styles.links}>
-        <Link href={"/register"} style={styles.button}>
-          <Ionicons name="person-add-outline" size={20} color="#3D9D3D" />
+        <Pressable
+          onPress={() => {
+            router.push("/register");
+          }}
+          style={styles.button}
+        >
+          <Ionicons
+            name="person-add-outline"
+            size={20}
+            color="#3D9D3D"
+            style={{ marginRight: 4 }}
+          />
 
-          <Text> Registro</Text>
-        </Link>
+          <Text style={styles.buttonText}>Registro</Text>
+        </Pressable>
 
-        <Link href={"/(tabs)/"} replace style={styles.button}>
+        <Pressable
+          onPress={() => {
+            router.push("/(tabs)/");
+          }}
+          style={styles.button}
+        >
           <Ionicons
             name="fast-food-outline"
             size={20}
             color="#3D9D3D"
-            style={{ marginRight: 14 }}
+            style={{ marginRight: 4 }}
           />
-          <Text> Ver el menú</Text>
-        </Link>
+          <Text style={styles.buttonText}>Ver el menú</Text>
+        </Pressable>
       </View>
     </View>
   );
@@ -66,7 +81,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     borderColor: "#3D9D3D",
     borderWidth: 1,
-
     maxHeight: 50,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  buttonText: {
+    color: "#3D9D3D",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });

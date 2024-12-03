@@ -6,7 +6,6 @@ import {
   Pressable,
   ScrollView,
   Modal,
-  TouchableOpacity,
 } from "react-native";
 import { useLocalSearchParams, Link } from "expo-router";
 import { useEffect, useState } from "react";
@@ -297,10 +296,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   image: {
-    width: 400,
+    width: "100%",
     height: 200,
-    borderRadius: 10,
-    resizeMode: "contain",
+    resizeMode: "cover",
   },
   description: {
     fontSize: 18,
@@ -335,7 +333,7 @@ const styles = StyleSheet.create({
 
   radiobuttonform: {
     display: "flex",
-    flexDirection: "column",
+    flexWrap: "wrap",
     gap: 10,
   },
   header: {
