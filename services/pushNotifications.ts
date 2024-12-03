@@ -22,7 +22,7 @@ export async function registerForPushNotifications() {
       finalStatus = status;
     }
     if (finalStatus !== "granted") {
-      alert("No se concedieron permisos para las notificaciones");
+      console.log("No se concedieron permisos para las notificaciones");
     }
     const projectID =
       Constants?.expoConfig?.extra?.eas?.projectId ??
@@ -43,7 +43,7 @@ export async function registerForPushNotifications() {
       return null;
     }
   } else {
-    alert("Debes usar un dispositivo físico para recibir notificaciones");
+    console.log("Debes usar un dispositivo físico para recibir notificaciones");
     return null;
   }
 }
