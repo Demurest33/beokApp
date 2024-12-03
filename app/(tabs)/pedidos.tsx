@@ -35,7 +35,7 @@ export default function TabTwoScreen() {
   }, [orders]);
 
   const goLogin = () => {
-    router.replace("/login");
+    router.push("/login");
   };
 
   async function fetchOrders() {
@@ -62,8 +62,23 @@ export default function TabTwoScreen() {
   if (userStore.user === null) {
     return (
       <Pressable style={styles.loginContainer} onPress={goLogin}>
-        <Ionicons name="log-in-sharp" size={80} color="gray" />
-        <Text style={styles.text}>Incia sesión para hacer pedidos</Text>
+        <Text
+          style={{
+            fontSize: 22,
+            fontWeight: "bold",
+            textAlign: "center",
+            padding: 16,
+            maxWidth: 250,
+            color: "gray",
+          }}
+        >
+          Inicia sesión para ver tus pedidos
+        </Text>
+        <View style={styles.button}>
+          <Ionicons name="log-in-sharp" size={32} color="white" />
+
+          <Text style={styles.buttonText}>Iniciar sesión</Text>
+        </View>
       </Pressable>
     );
   }
@@ -202,5 +217,20 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
+  },
+  button: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#3D9D3D",
+    padding: 10,
+    borderRadius: 10,
+    marginTop: 20,
+    gap: 10,
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
