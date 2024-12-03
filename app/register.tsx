@@ -63,9 +63,12 @@ export default function RegisterScreen() {
         password_confirmation: confirmPassword,
       });
 
-      // Token de ejemplo para enviar la notificación (deberías reemplazarlo con el token del usuario registrado)
-
-      // Enviar la notificación
+      if (newUser) {
+        userStore.setUser(newUser);
+      } else {
+        alert("Error al registrar el usuario");
+        return;
+      }
 
       if (expoPushToken) {
         await sendPushNotification(
