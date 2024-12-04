@@ -105,7 +105,7 @@ export default function RegisterScreen() {
 
         <TextInput
           style={[styles.input, { flex: 1.5 }]}
-          placeholder="Apellido(s)"
+          placeholder="Apellidos"
           onChangeText={setLastName}
         />
       </View>
