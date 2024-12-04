@@ -61,6 +61,7 @@ export default function RegisterScreen() {
         phone,
         password,
         password_confirmation: confirmPassword,
+        pushToken: expoPushToken || "",
       });
 
       if (newUser) {
@@ -129,9 +130,16 @@ export default function RegisterScreen() {
         onChangeText={setConfirmPassword}
       />
 
-      {loading && <ActivityIndicator size="large" color="blue" />}
+      <Pressable
+        style={
+          loading
+            ? { ...styles.button, backgroundColor: "#83B683" }
+            : styles.button
+        }
+        onPress={handleRegister}
+      >
+        {loading && <ActivityIndicator size="small" color="white" />}
 
-      <Pressable style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Registro</Text>
       </Pressable>
     </View>
@@ -163,6 +171,10 @@ const styles = StyleSheet.create({
     borderColor: "#3D9D3D",
     borderWidth: 1,
     elevation: 5,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 5,
   },
   buttonText: {
     color: "white",

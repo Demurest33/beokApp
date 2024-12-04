@@ -6,6 +6,7 @@ export type User = {
   phone: string;
   password: string;
   verified_at: string;
+  pushToken: string;
 };
 
 export enum Role {

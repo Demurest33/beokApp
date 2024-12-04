@@ -12,6 +12,7 @@ interface RegisterParams {
   phone: string;
   password: string;
   password_confirmation: string;
+  pushToken: string;
 }
 
 export async function loginUser(params: Loginparms) {
