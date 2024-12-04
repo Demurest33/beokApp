@@ -37,6 +37,7 @@ export default function OrderDetails() {
     name,
     last_name,
     phone,
+    cancel_msg,
   } = useLocalSearchParams();
 
   const [orderDetails, setOrderDetails] = useState<order_product[]>([]);
@@ -171,22 +172,17 @@ export default function OrderDetails() {
               </View>
             </View>
 
-            <Text
+            {/* <Text
               style={{ textAlign: "center", marginVertical: 10, fontSize: 14 }}
             >
               Pedido realizado:{" "}
               {new Date(created_at.toString()).toLocaleString()}
-            </Text>
+            </Text> */}
+
             <Text
               style={{ textAlign: "center", marginVertical: 10, fontSize: 14 }}
             >
-              {status === OrderStatus.cancelado
-                ? "Pedido cancelado: "
-                : "Pedido entregado: "}
-              {status === OrderStatus.entregado ||
-              status === OrderStatus.cancelado
-                ? new Date(updated_at.toString()).toLocaleString()
-                : "------"}
+              {status === OrderStatus.cancelado && <Text>{cancel_msg}</Text>}
             </Text>
 
             {userStore.user?.role === Role.ADMIN ||

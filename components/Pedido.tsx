@@ -14,6 +14,7 @@ import {
   toogleFavOrder,
   statusColors,
   reOrder,
+  OrderStatus,
 } from "@/services/orders";
 import { useState } from "react";
 
@@ -37,6 +38,7 @@ export default function PedidoComponent({ pedido, fetchOrders }: props) {
         message: pedido.message,
         created_at: pedido.created_at,
         hash: pedido.hash,
+        cancel_msg: pedido.cancelation_msg,
       },
     });
   };
@@ -121,12 +123,35 @@ export default function PedidoComponent({ pedido, fetchOrders }: props) {
               Estado: {pedido.status}
             </Text>
 
-            <Text style={styles.total}>${pedido.total}</Text>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-evenly",
+                width: 100,
+              }}
+            >
+              <Text style={styles.total}>${pedido.total}</Text>
+
+              <TouchableOpacity onPress={toogleFav}>
+                <Ionicons
+                  name={isfav ? "star-sharp" : "star-outline"}
+                  size={24}
+                  color="#FFD700"
+                />
+              </TouchableOpacity>
+            </View>
           </View>
 
           <Text style={styles.details}>
             Método de pago: {pedido.payment_type}
           </Text>
+
+          {pedido.status === OrderStatus.cancelado && (
+            <Text style={styles.details}>
+              Motivo de cancelación: {pedido.cancelation_msg}
+            </Text>
+          )}
 
           {/* Botón e interacción */}
           <View style={styles.actions}>
@@ -137,14 +162,6 @@ export default function PedidoComponent({ pedido, fetchOrders }: props) {
             <Pressable onPress={re_order} style={styles.detailButton}>
               <Text style={styles.detailButtonText}>Ordenar nuevamente</Text>
             </Pressable>
-
-            <TouchableOpacity onPress={toogleFav}>
-              <Ionicons
-                name={isfav ? "star-sharp" : "star-outline"}
-                size={24}
-                color="#FFD700"
-              />
-            </TouchableOpacity>
           </View>
         </View>
       </View>

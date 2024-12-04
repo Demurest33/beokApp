@@ -22,6 +22,7 @@ export interface orderResponse {
   created_at: string;
   id: number;
   message: string;
+  cancelation_msg: string;
   payment_type: string;
   pick_up_date: string;
   status: OrderStatus;
@@ -36,6 +37,7 @@ export interface adminOrderResponse {
   created_at: string;
   id: number;
   message: string;
+  cancelation_msg: string;
   payment_type: string;
   pick_up_date: string;
   status: OrderStatus;
