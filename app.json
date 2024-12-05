@@ -4,11 +4,11 @@
     "slug": "BeOk",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/banner.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/spscreen.png",
+      "image": "./assets/images/banner.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

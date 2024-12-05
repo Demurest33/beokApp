@@ -38,15 +38,19 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  if (!loaded || !isAppReady) {
-    return (
-      <SplashScreenComponent
-        onFinish={() => {
-          setIsAppReady(true);
-          SplashScreen.hideAsync();
-        }}
-      />
-    );
+  // if (!loaded || !isAppReady) {
+  //   return (
+  //     <SplashScreenComponent
+  //       onFinish={() => {
+  //         setIsAppReady(true);
+  //         SplashScreen.hideAsync();
+  //       }}
+  //     />
+  //   );
+  // }
+
+  if (!loaded) {
+    return null;
   }
 
   return (
