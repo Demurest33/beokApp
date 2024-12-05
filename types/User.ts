@@ -7,6 +7,7 @@ export type User = {
   password: string;
   verified_at: string;
   pushToken: string;
+  is_banned: boolean;
 };
 
 export enum Role {

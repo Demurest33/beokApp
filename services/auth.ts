@@ -27,6 +27,10 @@ export async function loginUser(params: Loginparms) {
         throw new Error("Usuario o contraseña no validos");
       }
 
+      if (status === 403) {
+        throw new Error("Este usuario ha sido baneado");
+      }
+
       if (status === 500) {
         throw new Error("Error en el inicio de sesión");
       }

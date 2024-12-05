@@ -5,6 +5,7 @@ import {
   Pressable,
   TextInput,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { useState } from "react";
 import { router } from "expo-router";
@@ -58,7 +59,7 @@ export default function LoginScreen() {
         router.replace("/(tabs)/");
       }
     } catch (error) {
-      alert(error);
+      Alert.alert("Error", error?.toString());
     } finally {
       setLoading(false);
     }

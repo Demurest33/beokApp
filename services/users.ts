@@ -47,3 +47,29 @@ export async function updateRole(userid: string, role: Role) {
     throw error;
   }
 }
+
+export async function toogleBanUser(userid: string) {
+  try {
+    const response = await api.patch(`/users/${userid}/toggle-ban`);
+
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      const status = error.response?.status;
+
+      if (status === 404) {
+        throw new Error("Usuario no encontrado");
+      }
+
+      if (status === 500) {
+        throw new Error("Error en la base de datos");
+      }
+
+      return error;
+    }
+
+    throw error;
+  }
+}

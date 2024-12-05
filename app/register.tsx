@@ -112,6 +112,7 @@ export default function RegisterScreen() {
 
       <TextInput
         style={[styles.input]}
+        keyboardType="phone-pad"
         placeholder="Teléfono (WhatsApp)"
         onChangeText={setPhone}
       />

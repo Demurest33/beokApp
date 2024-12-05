@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { User, Role } from "@/types/User";
-import { updateRole } from "@/services/users";
+import { updateRole, toogleBanUser } from "@/services/users";
 import WhatsappLink from "../WhatsappLink";
 
 interface UserCardProps {
@@ -20,6 +20,7 @@ interface UserCardProps {
 export default function UserCard({ user, fetchUsers }: UserCardProps) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedRole, setSelectedRole] = useState<Role>(user.role);
+  const [selectedBan, setSelectedBan] = useState<boolean>(user.is_banned);
 
   const changeRole = async (newRole: Role) => {
     try {
@@ -39,7 +40,15 @@ export default function UserCard({ user, fetchUsers }: UserCardProps) {
 
   return (
     <>
-      <View style={styles.user}>
+      <View
+        style={[
+          styles.user,
+          user.is_banned && {
+            backgroundColor: "#FFD6D6",
+            opacity: 0.8,
+          },
+        ]}
+      >
         <View style={{ flexDirection: "column" }}>
           <Text style={styles.userText}>
             {user.name} {user.lastname}
@@ -99,6 +108,41 @@ export default function UserCard({ user, fetchUsers }: UserCardProps) {
                 </Text>
               </TouchableOpacity>
             ))}
+
+            <Text style={[styles.modalTitle, { marginBottom: 6 }]}>
+              Banear usuario
+            </Text>
+            <TouchableOpacity
+              // Si el usuario ya está baneado que el botonse vea outlined
+              style={
+                selectedBan ? styles.outelineadBanUserBtn : styles.banUserBtn
+              }
+              onPress={async () => {
+                try {
+                  const res = await toogleBanUser(user.id);
+                  setModalVisible(false);
+                  setSelectedBan(!selectedBan);
+                  if (res instanceof Error) {
+                    Alert.alert("Error", res.message);
+                  } else {
+                    fetchUsers();
+                  }
+                } catch (error) {
+                  console.error(error);
+                }
+              }}
+            >
+              <Text
+                // Si el usuario ya está baneado que el texto sea rojo sino que sea blanco
+                style={
+                  selectedBan
+                    ? styles.unbanText
+                    : { color: "white", fontWeight: "bold", fontSize: 18 }
+                }
+              >
+                {selectedBan ? "Desbanear" : "Banear"}
+              </Text>
+            </TouchableOpacity>
 
             {/* Botón para cerrar */}
             <Pressable
@@ -173,6 +217,37 @@ const styles = StyleSheet.create({
   },
   closeButtonText: {
     color: "#fff",
+    fontWeight: "bold",
+  },
+  banUserBtn: {
+    padding: 15,
+    borderRadius: 8,
+    marginVertical: 5,
+    backgroundColor: "#E53935",
+    width: "100%",
+    alignItems: "center",
+  },
+  outelineadBanUserBtn: {
+    padding: 15,
+    borderRadius: 8,
+    marginVertical: 5,
+    backgroundColor: "#fff",
+    width: "100%",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#E53935",
+  },
+  unbanUserBtn: {
+    padding: 15,
+    borderRadius: 8,
+    marginVertical: 5,
+    backgroundColor: "#3D9D3D",
+    width: "100%",
+    alignItems: "center",
+  },
+  unbanText: {
+    fontSize: 18,
+    color: "red",
     fontWeight: "bold",
   },
 });
