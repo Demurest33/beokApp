@@ -5,17 +5,18 @@ import {
   FlatList,
   RefreshControl,
   TextInput,
-  Button,
 } from "react-native";
 import UserCard from "@/components/admin/UserCard";
-import { User as UserType } from "@/types/User";
+import { UserWithOrderCounts } from "@/types/User";
 import { useEffect, useState } from "react";
 import { getAllUsers } from "@/services/users";
 
 export default function UsersScreen() {
-  const [users, setUsers] = useState<UserType[]>([]);
+  const [users, setUsers] = useState<UserWithOrderCounts[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchedUser, setSearchedUser] = useState<UserType | null>(null);
+  const [searchedUser, setSearchedUser] = useState<UserWithOrderCounts | null>(
+    null
+  );
 
   useEffect(() => {
     fetchUsers();
