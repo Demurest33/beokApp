@@ -87,7 +87,7 @@ export default function QrScanner() {
             setScanned(false);
           }}
         >
-          <Text style={styles.title}>Escanear QR del cliente</Text>
+          <Text style={styles.title}>Volver a escanear QR</Text>
         </Pressable>
 
         <Order order={order!} />

@@ -1,5 +1,5 @@
 import { View, Text, FlatList, StyleSheet } from "react-native";
-import { decodeQrResponse } from "@/services/orders";
+import { decodeQrResponse, statusColors } from "@/services/orders";
 import MyPicker from "@/components/admin/Picker";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -28,7 +28,15 @@ export default function Order({ order }: { order: decodeQrResponse }) {
         style={styles.body}
         ListHeaderComponent={
           <>
-            <Text style={[styles.status, styles.title]}>
+            <Text
+              style={[
+                styles.status,
+                styles.title,
+                {
+                  color: statusColors[status],
+                },
+              ]}
+            >
               {translatedStatus[status]}
             </Text>
             <View
@@ -134,7 +142,6 @@ const styles = StyleSheet.create({
   status: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#2a9d8f",
     marginBottom: 8,
   },
   message: {
