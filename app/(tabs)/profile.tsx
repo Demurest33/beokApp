@@ -29,7 +29,7 @@ export default function ProfileScreen() {
               color: "gray",
             }}
           >
-            Inicia sesión para ver tus pedidos
+            Inicia sesión para ver tu perfil
           </Text>
           <View style={styles.button}>
             <Ionicons name="log-in-sharp" size={32} color="white" />
