@@ -19,6 +19,7 @@ export default function ProductComponent({ product }: { product: Product }) {
         description: product.description,
         price: product.price,
         image_url: product.image_url,
+        available: product.available ? "Disponible" : "No disponible",
       },
     });
   };

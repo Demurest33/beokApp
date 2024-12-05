@@ -22,7 +22,8 @@ import { router } from "expo-router";
 
 export default function ProductComponent() {
   const cartStore = useCartStore();
-  const { id, name, description, price, image_url } = useLocalSearchParams();
+  const { id, name, description, price, image_url, available } =
+    useLocalSearchParams();
   const [options, setOptions] = useState<ProductOption[]>([]);
   const [selectedOptions, setSelectedOptions] = useState<{
     [key: string]: any;
@@ -272,9 +273,15 @@ export default function ProductComponent() {
           </Pressable>
         </Modal>
 
-        <Pressable onPress={getProductAndAttachoptions} style={styles.button}>
-          <Text style={styles.buttonText}>Agregar al carrito</Text>
-        </Pressable>
+        {available === "Disponible" ? (
+          <Pressable onPress={getProductAndAttachoptions} style={styles.button}>
+            <Text style={styles.buttonText}>Agregar al carrito</Text>
+          </Pressable>
+        ) : (
+          <Pressable style={{ ...styles.button, backgroundColor: "#83B683" }}>
+            <Text style={styles.buttonText}>Producto no disponible</Text>
+          </Pressable>
+        )}
       </View>
     </ScrollView>
   );
