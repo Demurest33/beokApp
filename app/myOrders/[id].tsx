@@ -179,11 +179,12 @@ export default function OrderDetails() {
               {new Date(created_at.toString()).toLocaleString()}
             </Text> */}
 
-            <Text
-              style={{ textAlign: "center", marginVertical: 10, fontSize: 14 }}
-            >
-              {status === OrderStatus.cancelado && <Text>{cancel_msg}</Text>}
-            </Text>
+            {status === OrderStatus.cancelado && (
+              <View style={{ marginTop: 10 }}>
+                <Text style={styles.subtitle}>Motivo de cancelación</Text>
+                <Text style={styles.message}>{cancel_msg}</Text>
+              </View>
+            )}
 
             {userStore.user?.role === Role.ADMIN ||
             userStore.user?.role === Role.AXULIAR ? (

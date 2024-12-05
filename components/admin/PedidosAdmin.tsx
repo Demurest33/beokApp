@@ -27,6 +27,7 @@ export default function PedidoComponent({
         name: pedido.user.name,
         last_name: pedido.user.lastname,
         phone: pedido.user.phone,
+        cancel_msg: pedido.cancelation_msg,
       },
     });
   };
@@ -41,18 +42,27 @@ export default function PedidoComponent({
 
         <View style={styles.cardContent}>
           <View style={styles.header}>
-            <Text style={[styles.status]}>
-              {pedido.user.name} {pedido.user.lastname}
-            </Text>
+            <View>
+              <Text style={[styles.status]}>
+                {pedido.user.name} {pedido.user.lastname}
+              </Text>
+              <Text style={styles.date}>{pedido.pick_up_date}</Text>
+            </View>
 
             <Text style={styles.total}>${pedido.total}</Text>
           </View>
 
           <Text style={styles.details}>
-            Método de pago: {pedido.payment_type}
+            <Text style={{ fontWeight: "800" }}>Método de pago:</Text>{" "}
+            {pedido.payment_type}
           </Text>
 
-          <Text style={styles.date}>{pedido.pick_up_date}</Text>
+          {pedido.cancelation_msg && (
+            <Text style={styles.details}>
+              <Text style={{ fontWeight: "800" }}>Motivo de cancelación:</Text>{" "}
+              {pedido.cancelation_msg}
+            </Text>
+          )}
         </View>
       </Pressable>
     </>
@@ -88,7 +98,6 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 14,
     color: "#555",
-    fontWeight: "bold",
   },
   total: {
     fontSize: 16,
@@ -98,7 +107,7 @@ const styles = StyleSheet.create({
   status: {
     fontSize: 14,
     fontWeight: "600",
-    marginBottom: 8,
+    marginBottom: 2,
   },
   details: {
     fontSize: 14,

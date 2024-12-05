@@ -36,14 +36,14 @@ export async function registerForPushNotifications() {
           projectId: projectID,
         })
       ).data;
-      console.log("notif token: " + pushToken);
+      // console.log("notif token: " + pushToken);
       return pushToken;
     } catch (error) {
       console.log("Error al obtener el token de notificaciones: " + error);
       return null;
     }
   } else {
-    console.log("Debes usar un dispositivo físico para recibir notificaciones");
+    // console.log("Debes usar un dispositivo físico para recibir notificaciones");
     return null;
   }
 }

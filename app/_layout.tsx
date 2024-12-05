@@ -82,6 +82,8 @@ export default function RootLayout() {
                 "Numero de pedido: " + (route.params as { id: string })?.id,
             })}
           />
+
+          <Stack.Screen name="PedidoExitoso" />
         </Stack>
       </ThemeProvider>
     </NotificationProvider>

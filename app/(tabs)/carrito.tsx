@@ -7,6 +7,7 @@ import {
   Platform,
   ScrollView,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import useCartStore from "@/store/cart";
 import { useState, useEffect } from "react";
@@ -23,6 +24,7 @@ import { Order, createOrder } from "@/services/orders";
 import useUserStore from "@/store/userStore";
 import { Ionicons } from "@expo/vector-icons";
 import { Router, router } from "expo-router";
+import PedidoExitoso from "@/app/PedidoExitoso";
 
 export default function Carrito() {
   const cartStore = useCartStore();
@@ -30,6 +32,7 @@ export default function Carrito() {
 
   const [total, setTotal] = useState(0);
   const [products, setProducts] = useState<productWithOptions[]>([]);
+  const [creatingOrder, setCreatingOrder] = useState(false);
 
   // setear la fecha y hora a 35 min despues de la hora actual en México
   const now = new Date();
@@ -43,7 +46,7 @@ export default function Carrito() {
   const [showTime, setShowTime] = useState(false);
   const [pago, setPago] = useState(paymentType.efectivo);
   const [showTransferOption, setShowTransferOption] = useState(true);
-  const [creatingOrder, setCreatingOrder] = useState(false);
+
   const [meesage, setMessage] = useState("");
 
   const radio_props = [
@@ -328,7 +331,15 @@ export default function Carrito() {
       setCreatingOrder(true);
       const response = await createOrder(order, parseInt(userStore.user.id));
       if (response) {
-        alert("Orden creada con éxito");
+        router.push({
+          pathname: "/PedidoExitoso",
+          params: {
+            hash: response.order.hash,
+            tipo: response.order.payment_type,
+            total: response.order.total,
+          },
+        });
+
         cartStore.clearCart();
       }
     } catch (error) {
@@ -341,6 +352,11 @@ export default function Carrito() {
 
   if (products.length === 0) {
     return (
+      // <PedidoExitoso
+      //   hash="weflbwejfweblf"
+      //   tipo={paymentType.efectivo}
+      //   total={123.0}
+      // />
       <View style={styles.loginContainer}>
         <Ionicons name="cart-sharp" size={80} color="gray" />
         <Text style={styles.text}>Agrega productos a tu carrito</Text>
@@ -501,7 +517,21 @@ export default function Carrito() {
           ))}
         </RadioForm>
 
-        <Pressable onPress={handleOrder} style={styles.button}>
+        {/* <Pressable onPress={handleOrder} style={styles.button}>
+          <Text style={styles.buttonText}>Enviar orden</Text>
+        </Pressable> */}
+
+        <Pressable
+          style={
+            creatingOrder
+              ? { ...styles.button, backgroundColor: "#83B683" }
+              : styles.button
+          }
+          onPress={handleOrder}
+        >
+          {creatingOrder ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : null}
           <Text style={styles.buttonText}>Enviar orden</Text>
         </Pressable>
       </ScrollView>
@@ -567,11 +597,22 @@ const styles = StyleSheet.create({
     maxWidth: 200,
   },
   button: {
-    backgroundColor: "#3D9D3D",
     padding: 10,
     borderRadius: 5,
+    backgroundColor: "#3D9D3D",
+    minWidth: 300,
+    textAlign: "center",
+    fontSize: 16,
+    fontWeight: "bold",
+    borderColor: "#3D9D3D",
+    borderWidth: 1,
+    elevation: 5,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
     alignItems: "center",
-    marginTop: 20,
+    gap: 8,
+    marginTop: 8,
   },
   buttonText: {
     color: "white",

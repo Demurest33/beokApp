@@ -20,7 +20,6 @@ export default function QrCode(props: props) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Código QR</Text>
       <QRCode value={qrData} size={200} />
     </View>
   );
@@ -28,13 +27,8 @@ export default function QrCode(props: props) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 18,
-    marginBottom: 16,
+    marginVertical: 20,
   },
 });
