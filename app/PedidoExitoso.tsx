@@ -122,9 +122,11 @@ export default function () {
             <Text style={styles.btnTextOutlined}>Ver pedidos</Text>
           </Pressable>
 
-          <Pressable style={styles.button} onPress={enviarComprobante}>
-            <Text style={styles.buttonText}>Enviar comprobante</Text>
-          </Pressable>
+          {tipo == paymentType.transferencia && (
+            <Pressable style={styles.button} onPress={enviarComprobante}>
+              <Text style={styles.buttonText}>Enviar comprobante</Text>
+            </Pressable>
+          )}
         </View>
       </View>
     </LinearGradient>
