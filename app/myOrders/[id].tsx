@@ -6,7 +6,8 @@ import {
   Pressable,
   ActivityIndicator,
   FlatList,
-  ScrollView,
+  Linking,
+  Alert,
 } from "react-native";
 import { useLocalSearchParams, Link } from "expo-router";
 import {
@@ -22,6 +23,8 @@ import MyPicker from "@/components/admin/Picker";
 import { Role } from "@/types/User";
 import { Ionicons } from "@expo/vector-icons";
 import WhatsappLink from "@/components/WhatsappLink";
+import { paymentType } from "@/store/cart";
+import * as Clipboard from "expo-clipboard";
 
 export default function OrderDetails() {
   const {
@@ -77,6 +80,30 @@ export default function OrderDetails() {
       </View>
     );
   }
+
+  const numero_cuenta = "4189 1431 1738 8119";
+  const banco = "Banorte";
+  const whatsapp = "2291204831";
+
+  const enviarComprobante = () => {
+    const url = `whatsapp://send?phone=${whatsapp}`;
+    Linking.canOpenURL(url)
+      .then((supported) => {
+        if (supported) {
+          return Linking.openURL(url);
+        } else {
+          Alert.alert(
+            "No se puede abrir WhatsApp",
+            "Puede que no tenga WhatsApp instalado en su dispositivo"
+          );
+        }
+      })
+      .catch((err) => console.error("Error al abrir WhatsApp", err));
+  };
+
+  const copyToClipboard = async () => {
+    await Clipboard.setStringAsync(numero_cuenta);
+  };
 
   return (
     <View style={styles.container}>
@@ -136,9 +163,7 @@ export default function OrderDetails() {
         ListFooterComponent={
           <>
             <View style={[styles.productHeader, { padding: 16 }]}>
-              <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-                Total {payment_type}
-              </Text>
+              <Text style={{ fontSize: 20, fontWeight: "bold" }}>Total</Text>
               <Text style={{ fontSize: 20, fontWeight: "bold" }}>${total}</Text>
             </View>
 
@@ -159,7 +184,11 @@ export default function OrderDetails() {
               </View>
 
               <View
-                style={{ flexDirection: "row", alignItems: "center", gap: 2 }}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 2,
+                }}
               >
                 <Ionicons name="time" size={28} color="black" />
                 <Text style={{ fontSize: 20 }}>
@@ -203,7 +232,96 @@ export default function OrderDetails() {
                 </View>
               </>
             ) : (
-              <QrCode pedidoId={hash.toString()} />
+              <>
+                <Text
+                  style={[styles.subtitle, { marginTop: 20, marginBottom: 0 }]}
+                >
+                  Método de pago: {payment_type}
+                </Text>
+
+                <QrCode pedidoId={hash.toString()} />
+
+                <View
+                  style={{
+                    flexDirection: "row",
+                    padding: 10,
+                  }}
+                >
+                  {payment_type === paymentType.efectivo ? (
+                    <Text
+                      style={[
+                        styles.subtext,
+                        {
+                          marginBottom: 20,
+                        },
+                      ]}
+                    >
+                      Presenta este QR en mostador y realiza tu pago por{" "}
+                      <Text style={{ fontWeight: "bold" }}>${total}</Text> para
+                      que te entregen tus alimentos.
+                    </Text>
+                  ) : (
+                    <View
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text style={styles.subtext}>
+                        Realiza tu transferencia por{" "}
+                        <Text style={{ fontWeight: "bold" }}>${total}</Text>{" "}
+                        para que te entreguen tus alimentos.
+                      </Text>
+                      <View
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "space-evenly",
+                          gap: 8,
+                          marginTop: 8,
+                        }}
+                      >
+                        <Text
+                          style={{
+                            ...styles.subtext,
+                            marginTop: 4,
+                            color: "#FF0000",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          {banco}
+                        </Text>
+                        <Pressable onPress={copyToClipboard}>
+                          <Text
+                            style={{
+                              ...styles.subtext,
+                              marginTop: 4,
+                              fontWeight: "bold",
+                              textDecorationStyle: "solid",
+                              textDecorationLine: "underline",
+                            }}
+                          >
+                            {numero_cuenta}
+                          </Text>
+                        </Pressable>
+                      </View>
+
+                      <Pressable
+                        style={styles.button}
+                        onPress={enviarComprobante}
+                      >
+                        <Text style={styles.buttonText}>
+                          Enviar comprobante
+                        </Text>
+                      </Pressable>
+                    </View>
+                  )}
+
+                  <Ionicons></Ionicons>
+                </View>
+              </>
             )}
           </>
         }
@@ -290,5 +408,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+  subtext: { fontSize: 20 },
+  button: {
+    marginVertical: 20,
+    backgroundColor: "#3D9D3D",
+    padding: 8,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });
