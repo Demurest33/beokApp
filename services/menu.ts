@@ -26,3 +26,28 @@ export async function getProductOptions(id: number) {
     }
   }
 }
+
+export async function getAdminMenu() {
+  try {
+    const response = await api.get("/products-by-category");
+    return response.data;
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      return error;
+    }
+  }
+}
+
+export async function toogleProductAvailability(id: number) {
+  try {
+    const response = await api.patch(`/products/${id}/toggle-availability`);
+
+    if (response.status === 200) {
+      return true;
+    }
+  } catch (error: unknown) {
+    if (error instanceof AxiosError) {
+      return error;
+    }
+  }
+}
