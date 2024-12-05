@@ -28,6 +28,7 @@ export default function PedidoComponent({
         last_name: pedido.user.lastname,
         phone: pedido.user.phone,
         cancel_msg: pedido.cancelation_msg,
+        paid: pedido.paid ? "si" : "no",
       },
     });
   };
@@ -55,6 +56,11 @@ export default function PedidoComponent({
           <Text style={styles.details}>
             <Text style={{ fontWeight: "800" }}>Método de pago:</Text>{" "}
             {pedido.payment_type}
+          </Text>
+
+          <Text style={styles.details}>
+            <Text style={{ fontWeight: "800" }}>Pagado</Text>{" "}
+            {pedido.paid ? "Sí" : "No"}
           </Text>
 
           {pedido.cancelation_msg && (

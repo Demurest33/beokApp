@@ -31,6 +31,7 @@ export interface orderResponse {
   user_id: number;
   is_fav: boolean;
   hash: string;
+  paid: boolean;
 }
 
 export interface adminOrderResponse {
@@ -52,6 +53,7 @@ export interface adminOrderResponse {
     lastname: string;
     phone: string;
   };
+  paid: boolean;
 }
 
 export enum OrderStatus {
@@ -67,6 +69,7 @@ export interface order_product {
   product_id: number;
   quantity: number;
   price: number;
+  paid: boolean;
   selected_options: { [key: string]: string };
   image_url: string;
   product_name: string;
@@ -180,6 +183,20 @@ export async function updateOrderStatus(
     });
 
     return response.data;
+  } catch (error) {
+    console.error("Error al actualizar el estado del pedido:", error);
+
+    return null;
+  }
+}
+
+export async function tooglePaid(orderId: string) {
+  try {
+    const response = await api.patch(`/orders/${orderId}/toggle-paid`);
+
+    if (response.status == 200) {
+      return response.data;
+    }
   } catch (error) {
     console.error("Error al actualizar el estado del pedido:", error);
 

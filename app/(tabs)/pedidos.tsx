@@ -160,7 +160,7 @@ export default function TabTwoScreen() {
             <Ionicons
               name={showFavourites ? "star-sharp" : "star-outline"}
               size={32}
-              color="#E0B116"
+              color="#FFD700"
             />
           </Pressable>
 

@@ -15,6 +15,7 @@ import {
   order_product,
   OrderStatus,
   statusColors,
+  tooglePaid,
 } from "@/services/orders";
 import { useEffect, useState } from "react";
 import useUserStore from "@/store/userStore";
@@ -25,6 +26,7 @@ import { Ionicons } from "@expo/vector-icons";
 import WhatsappLink from "@/components/WhatsappLink";
 import { paymentType } from "@/store/cart";
 import * as Clipboard from "expo-clipboard";
+import { router } from "expo-router";
 
 export default function OrderDetails() {
   const {
@@ -41,11 +43,13 @@ export default function OrderDetails() {
     last_name,
     phone,
     cancel_msg,
+    paid,
   } = useLocalSearchParams();
 
   const [orderDetails, setOrderDetails] = useState<order_product[]>([]);
   const [loading, setLoading] = useState(true);
   const userStore = useUserStore();
+  const [loadingPaid, setLoadingPaid] = useState(false);
 
   // darle formato a las fechas de created y updated
 
@@ -218,17 +222,59 @@ export default function OrderDetails() {
             {userStore.user?.role === Role.ADMIN ||
             userStore.user?.role === Role.AXULIAR ? (
               <>
-                <Text style={styles.subtitle}>Datos del cliente</Text>
-                <View style={{ paddingHorizontal: 16, gap: 2 }}>
-                  <Text style={{ fontSize: 18 }}>
-                    {name} {last_name}
-                  </Text>
-                  <WhatsappLink phone={phone.toString()} />
+                <Text style={[styles.subtitle, { marginTop: 8 }]}>
+                  Datos del cliente
+                </Text>
 
+                <View style={styles.user}>
+                  <View style={{ flexDirection: "column" }}>
+                    <Text style={styles.userText}>
+                      {name} {last_name}
+                    </Text>
+
+                    <WhatsappLink phone={phone.toString()} />
+                  </View>
+                </View>
+
+                <View style={{ paddingHorizontal: 16, gap: 2 }}>
                   <MyPicker
                     orderID={parseInt(id.toString())}
                     key={parseInt(id.toString())}
                   />
+
+                  <Pressable
+                    onPress={async () => {
+                      setLoadingPaid(true);
+                      await tooglePaid(id.toString());
+                      setLoadingPaid(false);
+                      router.push("/admin/orders");
+                    }}
+                    style={[
+                      styles.button,
+                      {
+                        backgroundColor: paid == "si" ? "#3D9D3D" : "#FF0000",
+                      },
+                    ]}
+                  >
+                    {loadingPaid ? (
+                      <ActivityIndicator size="large" color="#fff" />
+                    ) : (
+                      <>
+                        <Ionicons
+                          name={
+                            paid == "si"
+                              ? "checkmark-circle"
+                              : "close-circle-outline"
+                          }
+                          size={24}
+                          color="white"
+                        />
+                        <Text style={styles.buttonText}>
+                          {paid == "si" ? "Pagado" : "No pagado"}
+                        </Text>
+                      </>
+                    )}
+                  </Pressable>
                 </View>
               </>
             ) : (
@@ -318,8 +364,6 @@ export default function OrderDetails() {
                       </Pressable>
                     </View>
                   )}
-
-                  <Ionicons></Ionicons>
                 </View>
               </>
             )}
@@ -421,5 +465,18 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  user: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 10,
+    borderWidth: 1,
+    borderBottomColor: "gray",
+    borderStyle: "solid",
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  userText: {
+    fontSize: 18,
   },
 });

@@ -37,9 +37,9 @@ export default function SmsVerificationScreen() {
       console.log(response);
 
       if (response?.verified_number) {
-        alert(
-          "verificacion exitosa para el número: " + response?.verified_number
-        );
+        // alert(
+        //   "verificacion exitosa para el número: " + response?.verified_number
+        // );
 
         router.replace("/(tabs)/");
       }
