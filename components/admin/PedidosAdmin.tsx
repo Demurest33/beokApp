@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { router } from "expo-router";
 import { adminOrderResponse, statusColors } from "@/services/orders";
+import { Ionicons } from "@expo/vector-icons";
 
 interface PedidoComponentProps {
   pedido: adminOrderResponse;
@@ -50,17 +51,26 @@ export default function PedidoComponent({
               <Text style={styles.date}>{pedido.pick_up_date}</Text>
             </View>
 
-            <Text style={styles.total}>${pedido.total}</Text>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 2,
+              }}
+            >
+              <Ionicons
+                name={pedido.paid ? "checkmark-circle" : "close-circle"}
+                size={24}
+                color={pedido.paid ? "green" : "red"}
+              />
+
+              <Text style={styles.total}>${pedido.total}</Text>
+            </View>
           </View>
 
           <Text style={styles.details}>
             <Text style={{ fontWeight: "800" }}>Método de pago:</Text>{" "}
             {pedido.payment_type}
-          </Text>
-
-          <Text style={styles.details}>
-            <Text style={{ fontWeight: "800" }}>Pagado</Text>{" "}
-            {pedido.paid ? "Sí" : "No"}
           </Text>
 
           {pedido.cancelation_msg && (
@@ -98,6 +108,7 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: "row",
+    alignItems: "flex-start",
     justifyContent: "space-between",
     marginBottom: 4,
   },

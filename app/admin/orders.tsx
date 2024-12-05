@@ -36,7 +36,6 @@ export default function OrdersScreen() {
 
   useEffect(() => {
     fetchOrders();
-    setFilteredOrders(orders);
   }, []);
 
   async function fetchOrders() {
@@ -46,6 +45,7 @@ export default function OrdersScreen() {
         const orders = await getOrders(parseInt(userStore.user.id));
         if (orders) {
           setOrders(orders);
+          setFilteredOrders(orders);
         }
       } catch (error) {
         console.error("Error al obtener los pedidos:", error);
@@ -93,6 +93,11 @@ export default function OrdersScreen() {
   ];
 
   const handleFilterStatus = async (status: OrderStatus | string) => {
+    if (searchedUser && status !== "todos") {
+      setFilteredOrders(orders);
+      return;
+    }
+
     if (status === "todos") {
       setFilteredOrders(orders);
       setModalVisible(false);
