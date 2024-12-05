@@ -1,7 +1,15 @@
-import { View, Text, FlatList, StyleSheet } from "react-native";
-import { decodeQrResponse, statusColors } from "@/services/orders";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  ActivityIndicator,
+  Pressable,
+} from "react-native";
+import { decodeQrResponse, statusColors, tooglePaid } from "@/services/orders";
 import MyPicker from "@/components/admin/Picker";
 import { Ionicons } from "@expo/vector-icons";
+import { useState } from "react";
 
 export default function Order({ order }: { order: decodeQrResponse }) {
   const {
@@ -13,6 +21,7 @@ export default function Order({ order }: { order: decodeQrResponse }) {
     message,
     created_at,
     updated_at,
+    paid,
   } = order.order;
 
   const translatedStatus = {
@@ -21,6 +30,9 @@ export default function Order({ order }: { order: decodeQrResponse }) {
     entregado: "Pedido entregado",
     cancelado: "Pedido cancelado",
   };
+
+  const [loadingPaid, setLoadingPaid] = useState(false);
+  const [myPaid, setMyPaid] = useState(paid);
 
   return (
     <View style={styles.container}>
@@ -116,6 +128,34 @@ export default function Order({ order }: { order: decodeQrResponse }) {
                 : "------"}
             </Text>
             <MyPicker orderID={id} key={id} />
+
+            <Pressable
+              onPress={async () => {
+                if (loadingPaid) return;
+                setLoadingPaid(true);
+                const res = await tooglePaid(id.toString());
+                setLoadingPaid(false);
+
+                if (res.success) {
+                  setMyPaid(!myPaid);
+                }
+              }}
+              style={[
+                styles.button,
+                {
+                  backgroundColor: myPaid ? "#3D9D3D" : "#f00",
+                },
+              ]}
+            >
+              <Ionicons
+                name={myPaid ? "checkmark-circle" : "close-circle"}
+                size={24}
+                color="white"
+              />
+              <Text style={styles.buttonText}>
+                {myPaid ? "Pagado" : "No pagado"}
+              </Text>
+            </Pressable>
           </>
         }
         ListEmptyComponent={<Text>No hay productos en este pedido.</Text>}
@@ -181,5 +221,17 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: "#f9f9f9",
     flex: 1,
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  button: {
+    marginVertical: 20,
+    backgroundColor: "#3D9D3D",
+    padding: 8,
+    borderRadius: 5,
+    alignItems: "center",
   },
 });
