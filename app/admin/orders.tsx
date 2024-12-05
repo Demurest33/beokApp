@@ -36,6 +36,7 @@ export default function OrdersScreen() {
 
   useEffect(() => {
     fetchOrders();
+    setFilteredOrders(orders);
   }, []);
 
   async function fetchOrders() {
@@ -93,13 +94,14 @@ export default function OrdersScreen() {
 
   const handleFilterStatus = async (status: OrderStatus | string) => {
     if (status === "todos") {
+      setFilteredOrders(orders);
       setModalVisible(false);
-      setFilteredOrders([]);
+      return;
     }
 
     const filtered = orders.filter((order) => order.status === status);
-    setFilteredOrders(filtered);
     setModalVisible(false);
+    setFilteredOrders(filtered);
   };
 
   return (
@@ -152,17 +154,11 @@ export default function OrdersScreen() {
               />
             }
             data={
-              filteredOrders.length > 0
-                ? searchedUser
-                  ? filteredOrders.filter((order) =>
-                      order.user.phone.includes(searchedUser)
-                    )
-                  : filteredOrders
-                : searchedUser
-                ? orders.filter((order) =>
+              searchedUser
+                ? filteredOrders.filter((order) =>
                     order.user.phone.includes(searchedUser)
                   )
-                : orders
+                : filteredOrders
             }
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
