@@ -12,7 +12,17 @@ export default function Layout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <Drawer drawerContent={(props) => <CustomDrawerContent {...props} />}>
+      <Drawer
+        drawerContent={(props) => <CustomDrawerContent {...props} />}
+        screenOptions={{
+          drawerActiveBackgroundColor: "#DDEEDD",
+          drawerActiveTintColor: "#3D9D3D",
+          drawerLabelStyle: {
+            fontWeight: "bold",
+          },
+          drawerInactiveTintColor: "#333",
+        }}
+      >
         <Drawer.Screen
           name="index"
           options={{
