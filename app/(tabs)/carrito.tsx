@@ -191,123 +191,10 @@ export default function Carrito() {
       return;
     }
 
-    //   Hora de cierre de la cafeteria 7pm -- Hasta esa hora se pueden recoger pedidos
-    // Hora de cierre de cocina -- 5pm
-    // Los pedidos se deben de hacer 30min antes de la hora de recogida
-    // Un pedido no se puede hacer so la hora actual (no la de recogida) es mayor a 4:30 pm
-    // La hora de regida no puede ser mayor a las 7pm
-    // La fecha de recogida no puede ser un domingo (ya que no se trabaja)
-    // La hora ni la fecha de recogida pueden ser un día ya pasado.
-
-    const now = new Date();
-    const utcOffset = now.getTimezoneOffset() * 60000; // Diferencia UTC en milisegundos
-    const mexicoOffset = -6 * 60 * 60 * 1000; // UTC-6 (tiempo estándar de México)
-    const mexicoTime = new Date(now.getTime() + utcOffset + mexicoOffset);
-
-    const closingTime = new Date(pickUpDate);
-    closingTime.setHours(19, 0, 0, 0); // 7:00 PM
-
-    const kitchenClosingTime = new Date(pickUpDate);
-    kitchenClosingTime.setHours(17, 0, 0, 0); // 5:00 PM
-
     const thirtyMinutesBeforePickup = new Date(pickUpDate);
     thirtyMinutesBeforePickup.setMinutes(
       thirtyMinutesBeforePickup.getMinutes() - 30
     );
-
-    // Validación 1: La fecha de recogida no puede ser un día ya pasado
-    if (pickUpDate < mexicoTime) {
-      console.log(pickUpDate, mexicoTime);
-      // alert("La fecha y hora de recogida no pueden ser en el pasado.");
-      Alert.alert(
-        "Fecha y hora inválidas",
-        "La fecha y hora de recogida no pueden ser en el pasado. ¿Deseas seleccionar una nueva fecha y hora?",
-        [
-          {
-            text: "Cancelar",
-            style: "destructive",
-          },
-          {
-            text: "Seleccionar",
-            style: "default",
-            onPress: () => {
-              {
-                setPickUpDate(mexicoTime);
-                setShow(true);
-              }
-            },
-          },
-        ],
-        {
-          cancelable: true,
-        }
-      );
-      return;
-    }
-
-    // Validación 2: No se aceptan pedidos los domingos
-    if (pickUpDate.getDay() === 0) {
-      // alert("No se aceptan pedidos los domingos.");
-      Alert.alert(
-        "No se aceptan pedidos los domingos",
-        "Selecciona una nueva fecha y hora de recogida.",
-        [
-          {
-            text: "Cancelar",
-            style: "destructive",
-          },
-          {
-            text: "Seleccionar",
-            style: "default",
-            onPress: () => {
-              {
-                // Si se selecciona un domingo, se cambia la fecha a el lunes
-                const newdate = mexicoTime as Date;
-                newdate.setDate(newdate.getDate() + 1);
-                setPickUpDate(newdate);
-                setShow(true);
-              }
-            },
-          },
-        ],
-        {
-          cancelable: true,
-        }
-      );
-      return;
-    }
-
-    // Validación 3: La hora actual en México no puede ser mayor a 4:30 PM
-    // const cutoffTime = new Date(mexicoTime);
-    // cutoffTime.setHours(16, 30, 0, 0); // 4:30 PM
-    // if (mexicoTime > cutoffTime) {
-    //   alert("No se pueden realizar pedidos después de las 4:30 PM.");
-    //   return;
-    // }
-
-    // Validación 4: La hora de recogida no puede ser mayor a las 7 PM
-    // if (pickUpDate > closingTime) {
-    //   alert("La hora de recogida no puede ser después de las 7:00 PM.");
-    //   return;
-    // }
-
-    // Validación 6: Los pedidos deben realizarse con al menos 30 minutos de anticipación
-    if (mexicoTime > thirtyMinutesBeforePickup) {
-      alert(
-        "Debes realizar tu pedido con al menos 30 minutos de anticipación para que la cocina tenga tiempo de prepararlo."
-      );
-      return;
-    }
-
-    // Validación 7: No se aceptan transferencias los viernes ni fines de semana
-    const dayOfWeek = pickUpDate.getDay(); // 0 = Domingo, 5 = Viernes, 6 = Sábado
-    if (
-      pago === paymentType.transferencia &&
-      (dayOfWeek === 5 || dayOfWeek === 6 || dayOfWeek === 0)
-    ) {
-      alert("No se aceptan transferencias los viernes, sábados ni domingos.");
-      return;
-    }
 
     const productsWithCalculatedPrices = products.map((product) => ({
       ...product,
@@ -343,8 +230,7 @@ export default function Carrito() {
         cartStore.clearCart();
       }
     } catch (error) {
-      console.error("Error al crear la orden:", error);
-      alert("Error al crear la orden");
+      Alert.alert("Error al enviar el pedido", String(error));
     } finally {
       setCreatingOrder(false);
     }

@@ -84,22 +84,57 @@ export interface decodeQrResponse {
 
 export async function createOrder(orderData: Order, userId: number) {
   try {
+    // Intentar crear el pedido
     const response = await api.post("/orders", {
       ...orderData,
       user_id: userId,
     });
 
+    // Si todo está bien, devolver la respuesta
     return response.data;
   } catch (error: unknown) {
+    // Verificar si el error es de tipo AxiosError
     if (error instanceof AxiosError) {
-      console.error(
-        "Error al crear el pedido:",
-        error.response?.data || error.message
-      );
-      return error.response?.data; // Devuelve el error si es de Axios
+      if (error.response) {
+        // Manejo de errores basados en el código de estado
+        const status = error.response.status;
+        const errorData = error.response.data;
+
+        switch (status) {
+          case 400:
+            throw new Error("Solicitud inválida. Revisa los datos ingresados.");
+
+          // En caso de que sea 403 entonces que le cierre la sesion y lo regrese a el login
+
+          case 404:
+            throw new Error("Usuario o recurso no encontrado.");
+          case 422:
+            throw new Error(
+              errorData?.error || "Datos no válidos para crear el pedido."
+            );
+          case 500:
+            throw new Error(
+              "Error en el servidor. Por favor, inténtalo más tarde."
+            );
+          default:
+            throw new Error(
+              errorData?.error ||
+                "Ocurrió un error inesperado. Inténtalo más tarde."
+            );
+        }
+      } else if (error.request) {
+        // Si no hay respuesta del servidor
+        throw new Error(
+          "No se pudo conectar al servidor. Verifica tu conexión."
+        );
+      } else {
+        // Error inesperado en la configuración de Axios
+        throw new Error(`Error en la solicitud: ${error.message}`);
+      }
     }
-    console.error("Error inesperado:", error);
-    return null;
+
+    // Si no es un error de Axios, lanzar un error genérico
+    throw new Error("Error desconocido al crear el pedido.");
   }
 }
 
@@ -150,7 +185,6 @@ export async function reOrder(orderId: number) {
   if (response.status == 200) {
     return response.data.products;
   }
-
   throw new Error("Hubo un problema reordenando el pedido");
 }
 
