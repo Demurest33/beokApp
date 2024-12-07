@@ -142,17 +142,14 @@ export async function toogleFavOrder(orderId: number) {
   throw new Error("Hubo un problema marcando el pedido como favorito");
 }
 
-export async function reOrder(orderId: number, pick_up_date: string) {
+export async function reOrder(orderId: number) {
   const response = await api.post(`/orders/reorder`, {
     order_id: orderId,
-    pick_up_date,
   });
 
   if (response.status == 200) {
-    return response.data;
+    return response.data.products;
   }
-
-  console.log(response);
 
   throw new Error("Hubo un problema reordenando el pedido");
 }
