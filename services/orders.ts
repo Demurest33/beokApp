@@ -116,7 +116,7 @@ export async function createOrder(orderData: Order, userId: number) {
             throw new Error("403");
 
           case 404:
-            throw new Error("Usuario o recurso no encontrado.");
+            throw new Error("404");
           case 422:
             throw new Error(
               errorData?.error || "Datos no válidos para crear el pedido."

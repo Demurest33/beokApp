@@ -41,6 +41,11 @@ export default function SmsVerificationScreen() {
         //   "verificacion exitosa para el número: " + response?.verified_number
         // );
 
+        userStore.setUser({
+          ...userStore.user!,
+          verified_at: new Date().toISOString(),
+        });
+
         router.replace("/(tabs)/");
       }
     } catch (error) {

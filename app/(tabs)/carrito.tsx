@@ -194,32 +194,34 @@ export default function Carrito() {
       return;
     }
 
-    if (!userStore.user.verified_at) {
-      // alert("Debes verificar tu número antes de realizar un pedido.");
-      Alert.alert(
-        "Verifica tu número de teléfono",
-        "Debes verificar tu número antes de realizar un pedido. ¿Deseas verificarlo ahora?",
-        [
-          {
-            text: "Cancelar",
-            style: "destructive",
-          },
-          {
-            text: "Verificar",
-            style: "default",
-            onPress: () => {
-              {
-                router.push("/smsVerification");
-              }
-            },
-          },
-        ],
-        {
-          cancelable: true,
-        }
-      );
-      return;
-    }
+    // const user = userStore.user;
+
+    // if (!user.verified_at) {
+    //   // alert("Debes verificar tu número antes de realizar un pedido.");
+    //   Alert.alert(
+    //     "Verifica tu número de teléfono",
+    //     "Debes verificar tu número antes de realizar un pedido. ¿Deseas verificarlo ahora?",
+    //     [
+    //       {
+    //         text: "Cancelar",
+    //         style: "destructive",
+    //       },
+    //       {
+    //         text: "Verificar",
+    //         style: "default",
+    //         onPress: () => {
+    //           {
+    //             router.push("/smsVerification");
+    //           }
+    //         },
+    //       },
+    //     ],
+    //     {
+    //       cancelable: true,
+    //     }
+    //   );
+    //   return;
+    // }
 
     const thirtyMinutesBeforePickup = new Date(pickUpDate);
     thirtyMinutesBeforePickup.setMinutes(
@@ -260,6 +262,15 @@ export default function Carrito() {
       if (String(error) == "Error: 403") {
         Alert.alert("Usuario bloqueado", "Este usuario se encuentra bloqueado");
         router.push("/login");
+        return;
+      }
+
+      if (String(error) == "Error: 404") {
+        Alert.alert(
+          "Usuario no verificado",
+          "Debes de verificar tu número de teléfono antes de realizar un pedido."
+        );
+        router.push("/smsVerification");
         return;
       }
 

@@ -75,12 +75,14 @@ export default function LoginScreen() {
         keyboardType="phone-pad"
         accessibilityHint="phone"
         onChangeText={setphone}
+        value={phone}
       />
 
       <TextInput
         style={styles.input}
         placeholder="Contraseña"
         onChangeText={setPassword}
+        value={password}
         secureTextEntry={true}
         accessibilityHint="password"
       />
