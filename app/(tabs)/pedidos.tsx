@@ -172,6 +172,9 @@ export default function TabTwoScreen() {
                 colors={["#000"]}
               />
             }
+            contentContainerStyle={{
+              flexDirection: "column-reverse",
+            }}
             data={orders}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (

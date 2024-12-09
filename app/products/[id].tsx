@@ -254,7 +254,7 @@ export default function ProductComponent() {
                 <Pressable
                   style={[styles.modalButton, { backgroundColor: "gray" }]}
                   onPress={() => {
-                    setShowModal(false), router.replace("/(tabs)/");
+                    setShowModal(false);
                   }}
                 >
                   <Text style={styles.buttonText}>Seguir comprando</Text>

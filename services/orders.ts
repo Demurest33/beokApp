@@ -84,6 +84,13 @@ export interface decodeQrResponse {
 
 export async function createOrder(orderData: Order, userId: number) {
   try {
+    // console.log("orderData", orderData);
+    // console.log("selectedoptionprices", orderData.products[0].selectedOptions);
+    // console.log(
+    //   "selectedoptionprices",
+    //   orderData.products[0].selectedOptionPrices
+    // );
+
     // Intentar crear el pedido
     const response = await api.post("/orders", {
       ...orderData,
@@ -104,7 +111,9 @@ export async function createOrder(orderData: Order, userId: number) {
           case 400:
             throw new Error("Solicitud inválida. Revisa los datos ingresados.");
 
-          // En caso de que sea 403 entonces que le cierre la sesion y lo regrese a el login
+          // En caso de que sea 403 entonces que le cierre la sesion y lo regrese a login
+          case 403:
+            throw new Error("403");
 
           case 404:
             throw new Error("Usuario o recurso no encontrado.");

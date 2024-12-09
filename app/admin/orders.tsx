@@ -151,6 +151,9 @@ export default function OrdersScreen() {
                 <Text style={styles.text}>No hay pedidos</Text>
               </View>
             }
+            contentContainerStyle={{
+              flexDirection: "column-reverse",
+            }}
             refreshControl={
               <RefreshControl
                 refreshing={false}

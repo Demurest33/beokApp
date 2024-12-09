@@ -97,40 +97,70 @@ export default function Carrito() {
     const currentDate = selectedDate || pickUpDate;
 
     // si se selcciona una fecha en domingo, alertar al usuario
-    if (pickUpDate.getDay() === 0) {
-      // alert("No se aceptan pedidos los domingos.");
-      Alert.alert(
-        "No se aceptan pedidos los domingos",
-        "Selecciona una nueva fecha y hora de recogida.",
-        [
-          {
-            text: "Cancelar",
-            style: "destructive",
-          },
-          {
-            text: "Seleccionar",
-            style: "default",
-            onPress: () => {
-              {
-                // Si se selecciona un domingo, se cambia la fecha a el lunes
-                const newdate = mexicoTime as Date;
-                newdate.setDate(newdate.getDate() + 1);
-                setPickUpDate(newdate);
-                setShow(true);
-              }
-            },
-          },
-        ],
-        {
-          cancelable: true,
-        }
-      );
-      return;
-    }
+    // if (pickUpDate.getDay() === 0) {
+    //   // alert("No se aceptan pedidos los domingos.");
+    //   Alert.alert(
+    //     "No se aceptan pedidos los domingos",
+    //     "Selecciona una nueva fecha y hora de recogida.",
+    //     [
+    //       {
+    //         text: "Cancelar",
+    //         style: "destructive",
+    //       },
+    //       {
+    //         text: "Seleccionar",
+    //         style: "default",
+    //         onPress: () => {
+    //           {
+    //             // Si se selecciona un domingo, se cambia la fecha a el lunes
+    //             const newdate = mexicoTime as Date;
+    //             newdate.setDate(newdate.getDate() + 1);
+    //             setPickUpDate(newdate);
+    //             setShow(true);
+    //           }
+    //         },
+    //       },
+    //     ],
+    //     {
+    //       cancelable: true,
+    //     }
+    //   );
+    //   return;
+    // }
 
     setShow(Platform.OS === "ios");
     setPickUpDate(currentDate);
     setShowTime(Platform.OS === "ios");
+  };
+
+  const formatDateForBackend = (date: any) => {
+    const months = [
+      "01",
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07",
+      "08",
+      "09",
+      "10",
+      "11",
+      "12",
+    ];
+
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+
+    const ampm = hours >= 12 ? "PM" : "AM";
+    const formattedHours = hours % 12 || 12; // Convert to 12-hour format
+    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+    const formattedSeconds = seconds < 10 ? `0${seconds}` : seconds;
+
+    return `${date.getDate() < 10 ? `0${date.getDate()}` : date.getDate()}/${
+      months[date.getMonth()]
+    }/${date.getFullYear()} ${formattedHours}:${formattedMinutes}:${formattedSeconds} ${ampm}`;
   };
 
   const handleOrder = async () => {
@@ -207,10 +237,7 @@ export default function Carrito() {
       products: productsWithCalculatedPrices,
       total,
       additionalInstructions: meesage,
-      pick_up_date:
-        pickUpDate!.toLocaleDateString() +
-        " " +
-        pickUpDate!.toLocaleTimeString(),
+      pick_up_date: formatDateForBackend(pickUpDate),
       payment_type: pago,
     };
 
@@ -230,6 +257,12 @@ export default function Carrito() {
         cartStore.clearCart();
       }
     } catch (error) {
+      if (String(error) == "Error: 403") {
+        Alert.alert("Usuario bloqueado", "Este usuario se encuentra bloqueado");
+        router.push("/login");
+        return;
+      }
+
       Alert.alert("Error al enviar el pedido", String(error));
     } finally {
       setCreatingOrder(false);
@@ -334,7 +367,7 @@ export default function Carrito() {
           <Pressable onPress={() => setShow(true)} style={styles.icon}>
             <Ionicons name="calendar-outline" size={40} color="black" />
             <Text style={{ marginLeft: 8 }}>
-              {pickUpDate.toLocaleDateString()}
+              {formatDateForBackend(pickUpDate).split(" ")[0]}
             </Text>
           </Pressable>
 
