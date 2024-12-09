@@ -39,7 +39,9 @@ export default function CartProduct(product: productWithOptions) {
       <View style={styles.container}>
         <Image source={{ uri: image_url }} style={styles.image} />
         <View style={{ marginLeft: 8 }}>
-          <View style={{ display: "flex", flexDirection: "row" }}>
+          <View
+            style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}
+          >
             <Text style={[styles.text]}>
               {name} {`(${quantity})`}
             </Text>

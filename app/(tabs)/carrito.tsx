@@ -338,6 +338,7 @@ export default function Carrito() {
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-between",
+            flexWrap: "wrap",
             paddingHorizontal: 8,
           }}
         >

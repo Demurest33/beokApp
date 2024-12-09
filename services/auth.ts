@@ -35,7 +35,7 @@ export async function loginUser(params: Loginparms) {
         throw new Error("Error en el inicio de sesión");
       }
 
-      return error;
+      throw new Error("Error en el inicio de sesión");
     }
   }
 }

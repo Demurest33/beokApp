@@ -123,20 +123,34 @@ export default function SmsVerificationScreen() {
         </Pressable>
       </View>
 
-      <Pressable style={styles.button} onPress={handleSmsVerification}>
+      {/* <Pressable style={styles.button} onPress={handleSmsVerification}>
         <Text
           style={{
             color: "white",
             textAlign: "center",
             fontWeight: "bold",
             fontSize: 16,
+            gap: 5,
+            flexDirection: "row",
+            alignItems: "center",
           }}
         >
+          {loading && <ActivityIndicator size="small" color="#fff" />}
           Verificar
         </Text>
-      </Pressable>
+      </Pressable> */}
 
-      {loading && <ActivityIndicator size="large" color="#0000ff" />}
+      <Pressable
+        style={
+          loading
+            ? { ...styles.buttonLarge, backgroundColor: "#83B683" }
+            : styles.button
+        }
+        onPress={handleSmsVerification}
+      >
+        {loading ? <ActivityIndicator size="small" color="#fff" /> : null}
+        <Text style={styles.buttonText}>Verificar</Text>
+      </Pressable>
 
       {cooldown > 0 && (
         <Text style={{ textAlign: "center", fontSize: 16, marginTop: 10 }}>
@@ -166,5 +180,28 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
+  },
+  buttonText: {
+    color: "white",
+    textAlign: "center",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  buttonLarge: {
+    padding: 10,
+    marginTop: 10,
+    borderRadius: 5,
+    backgroundColor: "#3D9D3D",
+    textAlign: "center",
+    fontSize: 16,
+    fontWeight: "bold",
+    borderColor: "#3D9D3D",
+    borderWidth: 1,
+    elevation: 5,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 8,
   },
 });
