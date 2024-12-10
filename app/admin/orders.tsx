@@ -11,7 +11,6 @@ import {
   Modal,
   TouchableWithoutFeedback,
 } from "react-native";
-import {} from "@/services/orders";
 import { useEffect, useState } from "react";
 import useUserStore from "@/store/userStore";
 import PedidoComponent from "@/components/admin/PedidosAdmin";
@@ -20,7 +19,6 @@ import {
   adminOrderResponse,
   OrderStatus,
   statusColors,
-  updateOrderStatus,
 } from "@/services/orders";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -30,6 +28,7 @@ export default function OrdersScreen() {
   const [loading, setLoading] = useState(true);
   const [searchedUser, setSearchedUser] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [filteredOrders, setFilteredOrders] = useState<adminOrderResponse[]>(
     []
   );
@@ -38,6 +37,14 @@ export default function OrdersScreen() {
     fetchOrders();
   }, []);
 
+  useEffect(() => {
+    applyFilters();
+  }, [searchedUser, statusFilter]);
+
+  useEffect(() => {
+    setFilteredOrders(orders);
+  }, [orders]);
+
   async function fetchOrders() {
     if (userStore.user !== null) {
       try {
@@ -45,7 +52,6 @@ export default function OrdersScreen() {
         const orders = await getOrders(parseInt(userStore.user.id));
         if (orders) {
           setOrders(orders);
-          setFilteredOrders(orders);
         }
       } catch (error) {
         console.error("Error al obtener los pedidos:", error);
@@ -56,20 +62,29 @@ export default function OrdersScreen() {
     }
   }
 
-  if (loading) {
-    return (
-      <View>
-        <ActivityIndicator size="large" color="#000" />
-      </View>
-    );
+  function applyFilters() {
+    let filtered = orders;
+
+    if (searchedUser) {
+      filtered = filtered.filter((order) =>
+        order.user.phone.includes(searchedUser)
+      );
+
+      if (filtered.length === 0) {
+        setFilteredOrders(filtered);
+        return;
+      }
+    }
+
+    if (statusFilter !== "todos") {
+      filtered = filtered.filter((order) => order.status === statusFilter);
+    }
+
+    setFilteredOrders(filtered);
   }
 
   const pickeroptions = [
-    {
-      label: "Todos",
-      value: "todos",
-      color: "blue",
-    },
+    { label: "Todos", value: "todos", color: "blue" },
     {
       label: "Preparando",
       value: OrderStatus.preparando,
@@ -92,22 +107,13 @@ export default function OrdersScreen() {
     },
   ];
 
-  const handleFilterStatus = async (status: OrderStatus | string) => {
-    if (searchedUser && status !== "todos") {
-      setFilteredOrders(orders);
-      return;
-    }
-
-    if (status === "todos") {
-      setFilteredOrders(orders);
-      setModalVisible(false);
-      return;
-    }
-
-    const filtered = orders.filter((order) => order.status === status);
-    setModalVisible(false);
-    setFilteredOrders(filtered);
-  };
+  if (loading) {
+    return (
+      <View>
+        <ActivityIndicator size="large" color="#000" />
+      </View>
+    );
+  }
 
   return (
     <>
@@ -132,15 +138,8 @@ export default function OrdersScreen() {
             <TextInput
               keyboardType="phone-pad"
               style={styles.input}
-              onChange={(event) => {
-                if (event.nativeEvent.text === "") {
-                  setSearchedUser(null);
-                }
-              }}
               placeholder="Buscar por número de teléfono"
-              onEndEditing={(event) => {
-                setSearchedUser(event.nativeEvent.text);
-              }}
+              onChangeText={(text) => setSearchedUser(text || null)}
             />
           </View>
 
@@ -161,13 +160,7 @@ export default function OrdersScreen() {
                 colors={["#000"]}
               />
             }
-            data={
-              searchedUser
-                ? filteredOrders.filter((order) =>
-                    order.user.phone.includes(searchedUser)
-                  )
-                : filteredOrders
-            }
+            data={filteredOrders}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
               <PedidoComponent
@@ -188,15 +181,17 @@ export default function OrdersScreen() {
           >
             <TouchableWithoutFeedback>
               <View style={styles.modalContainer}>
-                {/* <Text style={styles.modalTitle}>
-                  Selecciona el nuevo estado
-                </Text> */}
                 <FlatList
                   style={{ width: "100%" }}
                   data={pickeroptions}
                   keyExtractor={(item) => item.value}
                   renderItem={({ item }) => (
-                    <Pressable onPress={() => handleFilterStatus(item.value)}>
+                    <Pressable
+                      onPress={() => {
+                        setStatusFilter(item.value);
+                        setModalVisible(false);
+                      }}
+                    >
                       <View
                         style={[styles.option, { borderLeftColor: item.color }]}
                       >
