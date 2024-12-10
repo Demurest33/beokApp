@@ -39,7 +39,7 @@ export default function Carrito() {
   const utcOffset = now.getTimezoneOffset() * 60000; // Diferencia UTC en milisegundos
   const mexicoOffset = -6 * 60 * 60 * 1000; // UTC-6 (tiempo estándar de México)
   const mexicoTime = new Date(now.getTime() + utcOffset + mexicoOffset);
-  mexicoTime.setMinutes(mexicoTime.getMinutes() + 35);
+  mexicoTime.setMinutes(mexicoTime.getMinutes() + 30);
 
   const [pickUpDate, setPickUpDate] = useState(mexicoTime);
   const [show, setShow] = useState(false);
@@ -371,8 +371,7 @@ export default function Carrito() {
           Fecha de entrega
         </Text>
         <Text style={{ color: "gray" }}>
-          La hora de entrega debe ser al menos 30 minutos después de la hora de
-          pedido.
+          Todos los pedidos deben de hacerse con 30 minutos de anticipación.
         </Text>
 
         <View style={styles.dateInputs}>
