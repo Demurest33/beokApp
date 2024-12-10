@@ -21,7 +21,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/banner.png",
+        "foregroundImage": "./assets/images/banner_small.png",
         "backgroundColor": "#ffffff"
       },
       "permissions": [
@@ -29,7 +29,18 @@
         "android.permission.RECORD_AUDIO"
       ],
       "package": "com.demurest.beokApp",
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "whatsapp"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "bundler": "metro",

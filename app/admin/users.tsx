@@ -61,6 +61,7 @@ export default function UsersScreen() {
           />
 
           <FlatList
+            style={{ marginBottom: 100 }}
             data={searchedUser ? [searchedUser] : users}
             keyExtractor={(user) => user.id}
             renderItem={({ item }) => (
