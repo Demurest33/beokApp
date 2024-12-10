@@ -64,9 +64,7 @@ export default function UsersScreen() {
             style={{ marginBottom: 100 }}
             data={searchedUser ? [searchedUser] : users}
             keyExtractor={(user) => user.id}
-            renderItem={({ item }) => (
-              <UserCard user={item} fetchUsers={fetchUsers} />
-            )}
+            renderItem={({ item }) => <UserCard user={item} />}
             refreshControl={
               <RefreshControl refreshing={loading} onRefresh={fetchUsers} />
             }

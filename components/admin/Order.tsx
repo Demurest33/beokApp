@@ -9,7 +9,10 @@ import {
 import { decodeQrResponse, statusColors, tooglePaid } from "@/services/orders";
 import MyPicker from "@/components/admin/Picker";
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { UserWithOrderCounts } from "@/types/User";
+import UserCard from "./UserCard";
+import { getAllUsers } from "@/services/users";
 
 export default function Order({ order }: { order: decodeQrResponse }) {
   const {
@@ -22,6 +25,7 @@ export default function Order({ order }: { order: decodeQrResponse }) {
     created_at,
     updated_at,
     paid,
+    user_id,
   } = order.order;
 
   const translatedStatus = {
@@ -33,6 +37,16 @@ export default function Order({ order }: { order: decodeQrResponse }) {
 
   const [loadingPaid, setLoadingPaid] = useState(false);
   const [myPaid, setMyPaid] = useState(paid);
+  const [orderUser, setOrderUser] = useState<UserWithOrderCounts | null>(null);
+
+  useEffect(() => {
+    getOrderUser();
+  }, []);
+
+  const getOrderUser = async () => {
+    const users = await getAllUsers(user_id.toString());
+    setOrderUser(users[0]);
+  };
 
   return (
     <View style={styles.container}>
@@ -127,6 +141,10 @@ export default function Order({ order }: { order: decodeQrResponse }) {
                 ? new Date(updated_at).toLocaleString()
                 : "------"}
             </Text>
+
+            {/* Informacion del usuario que hizo el pedido */}
+            {orderUser && <UserCard user={orderUser} />}
+
             <MyPicker orderID={id} key={id} />
 
             <Pressable

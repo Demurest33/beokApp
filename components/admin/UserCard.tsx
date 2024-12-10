@@ -15,10 +15,9 @@ import { statusColors } from "@/services/orders";
 
 interface UserCardProps {
   user: UserWithOrderCounts;
-  fetchUsers: () => void;
 }
 
-export default function UserCard({ user, fetchUsers }: UserCardProps) {
+export default function StandaloneUserCard({ user }: UserCardProps) {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedRole, setSelectedRole] = useState<Role>(user.role);
   const [selectedBan, setSelectedBan] = useState<boolean>(user.is_banned);
@@ -26,14 +25,26 @@ export default function UserCard({ user, fetchUsers }: UserCardProps) {
   const changeRole = async (newRole: Role) => {
     try {
       const res = await updateRole(user.id, newRole);
-      setSelectedRole(newRole);
-      setModalVisible(false);
-
       if (res instanceof Error) {
         Alert.alert("Error", res.message);
-      } else {
-        fetchUsers();
+        return;
       }
+      setSelectedRole(newRole);
+      setModalVisible(false);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const toggleBan = async () => {
+    try {
+      const res = await toogleBanUser(user.id);
+      if (res instanceof Error) {
+        Alert.alert("Error", res.message);
+        return;
+      }
+      setSelectedBan(!selectedBan);
+      setModalVisible(false);
     } catch (error) {
       console.error(error);
     }
@@ -44,7 +55,7 @@ export default function UserCard({ user, fetchUsers }: UserCardProps) {
       <View
         style={[
           styles.user,
-          user.is_banned && {
+          selectedBan && {
             backgroundColor: "#FFD6D6",
             opacity: 0.8,
           },
@@ -57,7 +68,7 @@ export default function UserCard({ user, fetchUsers }: UserCardProps) {
 
           <WhatsappLink phone={user.phone} />
 
-          {/* quiero que cada uno esté identifiacdo con un punto de color al lado */}
+          {/* Indicadores de estado de pedidos */}
           <View style={styles.orderStatusContainer}>
             <View style={styles.orderStatusRow}>
               <View
@@ -95,7 +106,7 @@ export default function UserCard({ user, fetchUsers }: UserCardProps) {
           </View>
         </View>
 
-        {/* Pressable para abrir el modal */}
+        {/* Botón para abrir el modal */}
         <Pressable onPress={() => setModalVisible(true)}>
           <Text
             style={[
@@ -107,12 +118,12 @@ export default function UserCard({ user, fetchUsers }: UserCardProps) {
               },
             ]}
           >
-            {user.role}
+            {selectedRole}
           </Text>
         </Pressable>
       </View>
 
-      {/* Modal para cambiar el rol */}
+      {/* Modal para cambiar el rol y banear */}
       <Modal
         visible={modalVisible}
         transparent={true}
@@ -147,38 +158,24 @@ export default function UserCard({ user, fetchUsers }: UserCardProps) {
               </TouchableOpacity>
             ))}
 
+            {/* Botón para banear */}
             <Text style={[styles.modalTitle, { marginBottom: 6 }]}>
               Banear usuario
             </Text>
             <TouchableOpacity
-              // Si el usuario ya está baneado que el botonse vea outlined
               style={
                 selectedBan ? styles.outelineadBanUserBtn : styles.banUserBtn
               }
-              onPress={async () => {
-                try {
-                  const res = await toogleBanUser(user.id);
-                  setModalVisible(false);
-                  setSelectedBan(!selectedBan);
-                  if (res instanceof Error) {
-                    Alert.alert("Error", res.message);
-                  } else {
-                    fetchUsers();
-                  }
-                } catch (error) {
-                  console.error(error);
-                }
-              }}
+              onPress={toggleBan}
             >
               <Text
-                // Si el usuario ya está baneado que el texto sea rojo sino que sea blanco
                 style={
                   selectedBan
                     ? styles.unbanText
                     : { color: "white", fontWeight: "bold", fontSize: 18 }
                 }
               >
-                {selectedBan ? "Desbanear" : "Banear"}
+                {selectedBan ? "Desbloquear" : "Bloquear"}
               </Text>
             </TouchableOpacity>
 

@@ -2,9 +2,12 @@ import { api } from "./api";
 import { AxiosError } from "axios";
 import { Role } from "../types/User";
 
-export async function getAllUsers() {
+export async function getAllUsers(userid?: string) {
   try {
-    const response = await api.get("/users");
+    // Construye la URL con o sin el parámetro userId
+    const url = userid ? `/users?userId=${userid}` : "/users";
+    const response = await api.get(url);
+
     return response.data;
   } catch (error: unknown) {
     if (error instanceof AxiosError) {
@@ -18,10 +21,10 @@ export async function getAllUsers() {
         throw new Error("Error en la base de datos");
       }
 
-      return error;
+      throw new Error("Error desconocido al obtener los usuarios");
     }
 
-    throw error;
+    throw new Error("Error desconocido al obtener los usuarios");
   }
 }
 
