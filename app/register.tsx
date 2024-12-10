@@ -101,12 +101,14 @@ export default function RegisterScreen() {
           style={[styles.input, { flex: 1 }]}
           placeholder="Nombre(s)"
           onChangeText={setName}
+          value={name}
         />
 
         <TextInput
           style={[styles.input, { flex: 1.5 }]}
           placeholder="Apellidos"
           onChangeText={setLastName}
+          value={lastName}
         />
       </View>
 
@@ -115,6 +117,7 @@ export default function RegisterScreen() {
         keyboardType="phone-pad"
         placeholder="Teléfono (WhatsApp)"
         onChangeText={setPhone}
+        value={phone}
       />
 
       <TextInput
@@ -122,6 +125,7 @@ export default function RegisterScreen() {
         placeholder="Contraseña"
         secureTextEntry={true}
         onChangeText={setPassword}
+        value={password}
       />
 
       <TextInput
@@ -129,6 +133,7 @@ export default function RegisterScreen() {
         placeholder="Confirmar contraseña"
         secureTextEntry={true}
         onChangeText={setConfirmPassword}
+        value={confirmPassword}
       />
 
       <Pressable
